@@ -64,6 +64,8 @@ const shopRoutes = require("./routes/shop");
 const payment = require("./routes/payment");
 const currency = require("./routes/currencies");
 const compaign = require("./routes/compaign");
+const car = require("./routes/car");
+
 
 
 
@@ -93,6 +95,8 @@ app.use("/api", payment);
 app.use("/api", currency);
 app.use("/api", compaign);
 app.use("/api", fileRouter);
+app.use("/api", car);
+
 
 
 

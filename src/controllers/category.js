@@ -10,13 +10,13 @@ const createCategory = async (req, res) => {
     // Validate if the 'blurDataURL' property exists in the logo object
 
     // If blurDataURL is not provided, generate it using the 'getBlurDataURL' function
-    const blurDataURL = await getBlurDataURL(cover.url);
+   // const blurDataURL = await getBlurDataURL(cover.url);
 
     await Categories.create({
       ...others,
       cover: {
         ...cover,
-        blurDataURL,
+       // blurDataURL,
       },
     });
 
@@ -163,7 +163,13 @@ const deleteCategoryBySlug = async (req, res) => {
     const { slug } = req.params;
 
     const category = await Categories.findOneAndDelete({ slug });
-    const dataaa = await singleFileDelete(category.cover._id);
+    //const dataaa = await singleFileDelete(category.cover._id);
+
+    if (category && category?.cover) {
+      await singleFileDelete(category?.cover?._id);
+    }
+
+
     if (!category) {
       return res.status(400).json({
         success: false,
