@@ -1,83 +1,72 @@
-const Brands = require("../models/Brand");
+const Blogs = require("../models/blog");
 const getBlurDataURL = require("../config/getBlurDataURL");
-// const { singleFileDelete } = require('../config/uploader');
+
 const {
   multiFilesDelete,
   singleFileDelete,
 } = require("../config/digitalOceanFunctions");
-const Brand = require("../models/Brand");
 
-const createBrand = async (req, res) => {
+
+const createBlog = async (req, res) => {
   try {
-    const { logo, ...others } = req.body;
+    const {  ...others } = req.body;
 
-    // Validate if the 'logo' property and its 'url' property exist in the request body
-    if (!logo || !logo.url) {
-      return res.status(400).json({ message: "Invalid Logo Data" });
-    }
 
-    // Validate if the 'blurDataURL' property exists in the logo object
 
-    // If blurDataURL is not provided, generate it using the 'getBlurDataURL' function
-    // const blurDataURL = await getBlurDataURL(logo.url);
-
-    // Creating a new brand
-    const newBrand = await Brands.create({
+    // Creating a new Blog
+    const newBlog = await Blogs.create({
       ...others,
-      logo: {
-        ...logo,
-        //   blurDataURL,
-      },
-      totalItems: 0,
+    
+      
     });
 
     res
       .status(201)
-      .json({ success: true, data: newBrand, message: "Brand Created" });
+      .json({ success: true, data: newBlog, message: "Blog Created" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-const getAllBrands = async (req, res) => {
+const getAllBlogs = async (req, res) => {
   try {
-    const brands = await Brands.find().sort({
+    const blogs = await Blogs.find().sort({
       createdAt: -1,
     });
     res.status(201).json({
       success: true,
-      data: brands,
+      data: blogs,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const getBrandBySlug = async (req, res) => {
+const getBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const brand = await Brands.findOne({ slug });
+    const blog = await Blogs.findOne({ slug });
 
-    if (!brand) {
-      return res.status(404).json({ message: "Brand Not Found" });
+    if (!blog) {
+      return res.status(404).json({ message: "Blog Not Found" });
     }
 
     res.status(201).json({
       success: true,
-      data: brand,
+      data: blog,
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const updateBrandBySlug = async (req, res) => {
+const updateBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
     const { ...others } = req.body;
     // Validate if the 'blurDataURL' property exists in the logo object
 
-    const updatedBrand = await Brands.findOneAndUpdate(
+    const updatedBlog = await Blogs.findOneAndUpdate(
       { slug },
       {
         ...others,
@@ -88,58 +77,58 @@ const updateBrandBySlug = async (req, res) => {
       }
     );
 
-    if (!updatedBrand) {
-      return res.status(404).json({ message: "Brand Not Found" });
+    if (!updatedBlog) {
+      return res.status(404).json({ message: "Blog Not Found" });
     }
 
     res
       .status(201)
-      .json({ success: true, data: updatedBrand, message: "Brand Updated" });
+      .json({ success: true, data: updatedBlog, message: "Blog Updated" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const deleteBrandBySlug = async (req, res) => {
+const deleteBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const brand = await Brands.findOne({ slug });
+    const blog = await Blogs.findOne({ slug });
 
-    if (!brand) {
-      return res.status(404).json({ message: "Brand Not Found" });
+    if (!blog) {
+      return res.status(404).json({ message: "Blog Not Found" });
     }
     // Uncomment the line below if you have a function to delete the logo file
-    //   const dataaa = await singleFileDelete(brand?.logo?._id);
+    //   const dataaa = await singleFileDelete(Blog?.logo?._id);
 
-    if (brand && brand?.logo) {
-      await singleFileDelete(brand?.logo?._id);
+    if (blog && blog?.logo) {
+      await singleFileDelete(blog?.logo?._id);
     }
 
-    await Brands.deleteOne({ slug });
+    await Blogs.deleteOne({ slug });
 
-    res.status(201).json({ success: true, message: "Brand Deleted" });
+    res.status(201).json({ success: true, message: "Blog Deleted" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const getBrands = async (req, res) => {
+const getBlogs = async (req, res) => {
   try {
-    const brands = await Brands.find().sort({
+    const blogs = await Blogs.find().sort({
       createdAt: -1,
     });
 
     res.status(201).json({
       success: true,
-      data: brands,
+      data: blogs,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// get admin brands pagination
-const getAdminBrands = async (req, res) => {
+// get admin Blogs pagination
+const getBlogsPagination = async (req, res) => {
   try {
     const { limit = 10, page = 1, search = "", sort = "" } = req.query;
 
@@ -163,11 +152,11 @@ const getAdminBrands = async (req, res) => {
     }
 
     const skip = parseInt(limit) || 10;
-    const totalSizes = await Brand.find({
+    const totalSizes = await Blogs.find({
       name: { $regex: search, $options: "i" },
       // vendor: vendor._id,
     });
-    const sizes = await Brand.find(
+    const sizes = await Blogs.find(
       {
         name: { $regex: search, $options: "i" },
         // vendor: vendor._id,
@@ -196,11 +185,11 @@ const getAdminBrands = async (req, res) => {
 };
 
 module.exports = {
-  createBrand,
-  getAllBrands,
-  getBrandBySlug,
-  updateBrandBySlug,
-  deleteBrandBySlug,
-  getBrands,
-  getAdminBrands,
+  createBlog,
+  getAllBlogs,
+  getBlogBySlug,
+  updateBlogBySlug,
+  deleteBlogBySlug,
+  getBlogs,
+  getBlogsPagination,
 };

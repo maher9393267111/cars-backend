@@ -4,6 +4,7 @@ const siteReview = require("../controllers/siteReview");
 
 // Import verifyToken function
 const verifyToken = require("../config/jwt");
+const SiteReview = require("../models/siteReview");
 
 
 // vendor routes
@@ -19,7 +20,7 @@ router.put("/admin/siteview/:slug", siteReview.updateSiteReviewBySlug);
 router.delete("/admin/siteview/:slug",  siteReview.deleteSiteReviewBySlug);
 
 
-// router.get("/admin/siteviewnopagination", Car.getAllCarsWithoutPagination);
+ router.get("/front/siteviewsnopagination", siteReview.getFrontReviews);
 
 
 module.exports = router;

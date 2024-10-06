@@ -15,77 +15,71 @@ const createSiteReview = async (req, res) => {
       ...others,
     });
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        data: newSiteReview,
-        message: "SiteReview Created",
-      });
+    res.status(201).json({
+      success: true,
+      data: newSiteReview,
+      message: "SiteReview Created",
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
 const getAllViews = async (req, res) => {
-    try {
-  
-  
-      const { limit = 10, page = 1, search = "", sort = "" } = req.query;
-  
-      let sortOption = {};
-  
-      // Determine sorting logic based on the sort parameter
-      if (sort === "Name A-Z") {
-        sortOption = { name: 1 }; // Ascending
-      } else if (sort === "Name Z-A") {
-        sortOption = { name: -1 }; // Descending
-      } else if (sort === "New") {
-        sortOption = { createdAt: -1 }; // Sort by creation date, newest first
-      } else if (sort === "Old") {
-        sortOption = { createdAt: 1 }; // Sort by creation date, oldest first
-      } else if (sort === "orderold") {
-        sortOption = { order: 1 }; // Sort by creation date, oldest first
-      } else if (sort === "ordernew") {
-        sortOption = { order: -1 }; // Sort by creation date, oldest first
-      } else if (sort === "") {
-        sortOption = { createdAt: -1 }; // Sort by creation date, oldest first
-      }
-  
-      const skip = parseInt(limit) || 10;
-      const totalSizes = await SiteReviews.find({
-        name: { $regex: search, $options: "i" },
-       // vendor: vendor._id,
-      });
-      const sizes = await SiteReviews.find(
-        {
-          name: { $regex: search, $options: "i" },
-         // vendor: vendor._id,
-        },
-        null,
-        {
-          skip: skip * (parseInt(page) - 1 || 0),
-          limit: skip,
-        }
-      ).sort(
-        sortOption
-        //  {  createdAt: -1, }
-      )
-        
-      
-        console.log("cars-->" , sizes)
-  
-      res.status(201).json({
-        success: true,
-        data: sizes,
-        count: Math.ceil(totalSizes.length / skip),
-      });
-    } catch (error) {
-      console.log(error?.message);
-      res.status(400).json({ success: false, message: error.message });
-    }
-  };
+  try {
+    const { limit = 10, page = 1, search = "", sort = "" } = req.query;
 
+    let sortOption = {};
+
+    // Determine sorting logic based on the sort parameter
+    if (sort === "Name A-Z") {
+      sortOption = { name: 1 }; // Ascending
+    } else if (sort === "Name Z-A") {
+      sortOption = { name: -1 }; // Descending
+    } else if (sort === "New") {
+      sortOption = { createdAt: -1 }; // Sort by creation date, newest first
+    } else if (sort === "Old") {
+      sortOption = { createdAt: 1 }; // Sort by creation date, oldest first
+    } else if (sort === "orderold") {
+      sortOption = { order: 1 }; // Sort by creation date, oldest first
+    } else if (sort === "ordernew") {
+      sortOption = { order: -1 }; // Sort by creation date, oldest first
+    } else if (sort === "") {
+      sortOption = { createdAt: -1 }; // Sort by creation date, oldest first
+    }
+
+    const skip = parseInt(limit) || 10;
+    const totalSizes = await SiteReviews.find({
+      name: { $regex: search, $options: "i" },
+      // vendor: vendor._id,
+    });
+    const sizes = await SiteReviews.find(
+      {
+        name: { $regex: search, $options: "i" },
+        // vendor: vendor._id,
+      },
+      null,
+      {
+        skip: skip * (parseInt(page) - 1 || 0),
+        limit: skip,
+      }
+    ).sort(
+      sortOption
+      //  {  createdAt: -1, }
+    );
+
+    console.log("cars-->", sizes);
+
+    res.status(201).json({
+      success: true,
+      data: sizes,
+      count: Math.ceil(totalSizes.length / skip),
+    });
+  } catch (error) {
+    console.log(error?.message);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
 
 const getSiteReviewBySlug = async (req, res) => {
   try {
@@ -125,13 +119,11 @@ const updateSiteReviewBySlug = async (req, res) => {
       return res.status(404).json({ message: "SiteReview Not Found" });
     }
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        data: updatedSiteReview,
-        message: "SiteReview Updated",
-      });
+    res.status(201).json({
+      success: true,
+      data: updatedSiteReview,
+      message: "SiteReview Updated",
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -175,6 +167,26 @@ const getSiteReviews = async (req, res) => {
   }
 };
 
+
+
+// fronted show all reviews
+const getFrontReviews= async (req, res) => {
+    try {
+      const category = await SiteReviews.find({
+     
+      })
+  
+      res.status(201).json({
+        success: true,
+        data: category,
+      });
+    } catch (error) {
+      res.status(400).json({ success: "Canot get Reviews", message: error.message  });
+    }
+  };
+
+
+
 module.exports = {
   createSiteReview,
   getAllViews,
@@ -182,4 +194,6 @@ module.exports = {
   updateSiteReviewBySlug,
   deleteSiteReviewBySlug,
   getSiteReviews,
+  getFrontReviews
 };
+

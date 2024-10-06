@@ -39,7 +39,7 @@ router.get('/categories/:slug', categories.getCategoryBySlug);
 router.get('/category-title/:slug', categories.getCategoryNameBySlug);
 
 
-//me 
+//me  categories in admin dashboard with pagination and search sort
 router.get('/admin/categories-me/all', categories.getMeAdminCategories);
 
 
