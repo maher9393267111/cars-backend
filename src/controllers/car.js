@@ -250,11 +250,11 @@ const deleteCarBySlug = async (req, res) => {
     }
 
     if (car && car?.cover) {
-      await singleFileDelete(Car?.cover?._id);
+      await singleFileDelete(car?.cover?._id);
     }
 
-    if (car && car?.images && Car?.images.length > 0) {
-      await multiFilesDelete(Car.images);
+    if (car && car?.images && car?.images.length > 0) {
+      await multiFilesDelete(car.images);
     }
 
     await car.deleteOne({ slug });

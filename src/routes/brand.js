@@ -7,9 +7,17 @@ const verifyToken = require('../config/jwt');
 
 // admin routes
 
+//me
+router.get('/admin/brands-all', brand.getAdminBrands);
+
+
 router.post('/admin/brands', verifyToken, brand.createBrand);
 
 router.get('/admin/brands', verifyToken, brand.getBrands);
+
+
+
+
 
 router.get('/admin/brands/:slug', verifyToken, brand.getBrandBySlug);
 

@@ -65,6 +65,8 @@ const payment = require("./routes/payment");
 const currency = require("./routes/currencies");
 const compaign = require("./routes/compaign");
 const car = require("./routes/car");
+const siteReview = require("./routes/siteViews");
+
 
 
 
@@ -96,6 +98,8 @@ app.use("/api", currency);
 app.use("/api", compaign);
 app.use("/api", fileRouter);
 app.use("/api", car);
+app.use("/api", siteReview);
+
 
 
 

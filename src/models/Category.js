@@ -43,8 +43,14 @@ const CategorySchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      required: true,
+    //  required: true,
     },
+
+    show: {
+      type: Boolean,
+    },
+
+
     subCategories: [
       {
         type: mongoose.Schema.Types.ObjectId,

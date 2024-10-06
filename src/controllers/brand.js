@@ -1,6 +1,11 @@
 const Brands = require('../models/Brand');
 const getBlurDataURL = require('../config/getBlurDataURL');
-const { singleFileDelete } = require('../config/uploader');
+// const { singleFileDelete } = require('../config/uploader');
+const {
+  multiFilesDelete,
+  singleFileDelete,
+} = require("../config/digitalOceanFunctions");
+const Brand = require('../models/Brand');
 
 const createBrand = async (req, res) => {
   try {
@@ -14,14 +19,14 @@ const createBrand = async (req, res) => {
     // Validate if the 'blurDataURL' property exists in the logo object
 
     // If blurDataURL is not provided, generate it using the 'getBlurDataURL' function
-    const blurDataURL = await getBlurDataURL(logo.url);
+   // const blurDataURL = await getBlurDataURL(logo.url);
 
     // Creating a new brand
     const newBrand = await Brands.create({
       ...others,
       logo: {
         ...logo,
-        blurDataURL,
+     //   blurDataURL,
       },
       totalItems: 0,
     });
@@ -48,6 +53,10 @@ const getAllBrands = async (req, res) => {
   }
 };
 
+
+
+
+
 const getBrandBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -69,20 +78,14 @@ const getBrandBySlug = async (req, res) => {
 const updateBrandBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const { logo, ...others } = req.body;
+    const { ...others } = req.body;
     // Validate if the 'blurDataURL' property exists in the logo object
-    if (!logo.blurDataURL) {
-      // If blurDataURL is not provided, generate it using the 'getBlurDataURL' function
-      logo.blurDataURL = await getBlurDataURL(logo.url);
-    }
+
     const updatedBrand = await Brands.findOneAndUpdate(
       { slug },
       {
         ...others,
-        logo: {
-          ...logo,
-        },
-        totalItems: 0,
+   
       },
       {
         new: true,
@@ -113,8 +116,8 @@ const deleteBrandBySlug = async (req, res) => {
     // Uncomment the line below if you have a function to delete the logo file
  //   const dataaa = await singleFileDelete(brand?.logo?._id);
 
- if (brand && brand?.cover) {
-  await singleFileDelete(brand?.cover?._id);
+ if (brand && brand?.logo) {
+  await singleFileDelete(brand?.logo?._id);
 }
 
 
@@ -141,6 +144,69 @@ const getBrands = async (req, res) => {
   }
 };
 
+
+
+// get admin brands pagination
+const getAdminBrands = async (req, res) => {
+  try {
+
+
+    const { limit = 10, page = 1, search = "", sort = "" } = req.query;
+
+    let sortOption = {};
+
+    // Determine sorting logic based on the sort parameter
+    if (sort === "Name A-Z") {
+      sortOption = { name: 1 }; // Ascending
+    } else if (sort === "Name Z-A") {
+      sortOption = { name: -1 }; // Descending
+    } else if (sort === "New") {
+      sortOption = { createdAt: -1 }; // Sort by creation date, newest first
+    } else if (sort === "Old") {
+      sortOption = { createdAt: 1 }; // Sort by creation date, oldest first
+    } else if (sort === "orderold") {
+      sortOption = { order: 1 }; // Sort by creation date, oldest first
+    } else if (sort === "ordernew") {
+      sortOption = { order: -1 }; // Sort by creation date, oldest first
+    } else if (sort === "") {
+      sortOption = { createdAt: -1 }; // Sort by creation date, oldest first
+    }
+
+    const skip = parseInt(limit) || 10;
+    const totalSizes = await Brand.find({
+      name: { $regex: search, $options: "i" },
+     // vendor: vendor._id,
+    });
+    const sizes = await Brand.find(
+      {
+        name: { $regex: search, $options: "i" },
+       // vendor: vendor._id,
+      },
+      null,
+      {
+        skip: skip * (parseInt(page) - 1 || 0),
+        limit: skip,
+      }
+    ).sort(
+      sortOption
+      //  {  createdAt: -1, }
+    )
+      
+    
+      console.log("cars-->" , sizes)
+
+    res.status(201).json({
+      success: true,
+      data: sizes,
+      count: Math.ceil(totalSizes.length / skip),
+    });
+  } catch (error) {
+    console.log(error?.message);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+
 module.exports = {
   createBrand,
   getAllBrands,
@@ -148,4 +214,5 @@ module.exports = {
   updateBrandBySlug,
   deleteBrandBySlug,
   getBrands,
+  getAdminBrands
 };

@@ -38,4 +38,10 @@ router.get('/subcategories-slugs', categories.getSubCategoriesSlugs);
 router.get('/categories/:slug', categories.getCategoryBySlug);
 router.get('/category-title/:slug', categories.getCategoryNameBySlug);
 
+
+//me 
+router.get('/admin/categories-me/all', categories.getMeAdminCategories);
+
+
+
 module.exports = router;
