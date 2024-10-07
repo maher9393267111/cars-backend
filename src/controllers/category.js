@@ -59,7 +59,7 @@ const getAllCategories = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .select(['name', 'slug'])
+      .select(['name', 'slug' ,'_id' ,"cover"])
       .populate({ path: 'subCategories', select: ['name', 'slug'] });
 
 
