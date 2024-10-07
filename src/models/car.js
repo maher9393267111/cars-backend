@@ -11,6 +11,45 @@ const CarSchema = new mongoose.Schema(
     status: {
       type: String,
     },
+
+    doors: {
+      type: Number,
+      default: 1,
+    },
+
+    seats: {
+      type: Number,
+      default: 1,
+    },
+    speed: {
+      type: Number,
+      default: 1,
+    },
+
+    // automatic or manual
+    type: {
+      type: String,
+      default: 'manual',
+      },
+      // fuel type
+      fueltype: {
+        type: String,
+        default: 'gasoline',
+      },
+      // transmission type
+      transmissionType: {
+        type: String,
+        default: 'automatic',
+      },
+      // engine capacity
+      engineCapacity: {
+        type: String,
+        default: '1.6L',
+      },
+      // year of manufacture
+
+
+
     isFeatured: {
       type: Boolean,
     },
@@ -112,8 +151,8 @@ const CarSchema = new mongoose.Schema(
   
 
 
-    colors: [String],
-    sizes: [String],
+    // colors: [String],
+    // sizes: [String],
   },
   { timestamps: true, strict: true }
 );
