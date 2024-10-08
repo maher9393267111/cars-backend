@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const CarSchema = new mongoose.Schema(
   {
@@ -29,33 +29,78 @@ const CarSchema = new mongoose.Schema(
     // automatic or manual
     type: {
       type: String,
-      default: 'manual',
-      },
-      // fuel type
-      fueltype: {
-        type: String,
-        default: 'gasoline',
-      },
-      // transmission type
-      transmissionType: {
-        type: String,
-        default: 'automatic',
-      },
-      // engine capacity
-      engineCapacity: {
-        type: String,
-        default: '1.6L',
-      },
-      // year of manufacture
+      default: "manual",
+    },
+    // fuel type
+    fueltype: {
+      type: String,
+      default: "gasoline",
+    },
+    // transmission type
+    transmissionType: {
+      type: String,
+      default: "automatic",
+    },
+    // engine capacity
+    engineCapacity: {
+      type: String,
+      default: "1.6L",
+    },
+    // year of manufacture
 
+    bodytype: {
+      type: String,
+    },
 
+    roadtax: {
+      type: Number,
+      default: 0,
+    },
+    enginesize: {
+      type: String,
+    },
+
+    wltp: {
+      type: String,
+    },
+
+    mbg: {
+      type: String,
+    },
+
+    year: {
+      type: String,
+    },
+
+    ulez: {
+      type: String,
+    },
+
+    wheelbase: {
+      type: String,
+    },
+
+        // New fields for features
+        standardFeatures: {
+          secondRemoteKeyFob: { type: Boolean, default: false },
+          secondRowPrivacyGlass: { type: Boolean, default: false },
+          secondRowTripleWideSeat: { type: Boolean, default: false },
+          autoHeadlamps: { type: Boolean, default: false },
+          bodyColourBumper: { type: Boolean, default: false },
+          completeRearTrimBoard: { type: Boolean, default: false },
+        },
+        
+        extraFeatures: {
+          secondRemoteKeyFob: { type: Boolean, default: false },
+          secondRowPrivacyGlass: { type: Boolean, default: false },
+        },
 
     isFeatured: {
       type: Boolean,
     },
     brand: {
       type: mongoose.Types.ObjectId,
-      ref: 'Brand',
+      ref: "Brand",
     },
     likes: {
       type: Number,
@@ -75,31 +120,31 @@ const CarSchema = new mongoose.Schema(
     },
     category: {
       type: mongoose.Types.ObjectId,
-      ref: 'Category',
-      required: [true, 'please provide a category id'],
+      ref: "Category",
+      required: [true, "please provide a category id"],
     },
     subCategory: {
       type: mongoose.Types.ObjectId,
-      ref: 'SubCategory',
-     // required: [true, 'please provide a sub category id'],
+      ref: "SubCategory",
+      // required: [true, 'please provide a sub category id'],
     },
 
     tags: [String],
 
     price: {
       type: Number,
-      required: [true, 'Price is required.'],
+      required: [true, "Price is required."],
     },
     priceSale: {
       type: Number,
-    //  required: [true, 'Sale price is required.'],
+      //  required: [true, 'Sale price is required.'],
     },
     oldPriceSale: {
       type: Number,
     },
     available: {
       type: Number,
-  //    required: [true, 'Available quantity is required.'],
+      //    required: [true, 'Available quantity is required.'],
     },
     sold: {
       type: Number,
@@ -108,11 +153,10 @@ const CarSchema = new mongoose.Schema(
     reviews: [
       {
         type: mongoose.Types.ObjectId,
-        ref: 'ProductReview',
+        ref: "ProductReview",
       },
     ],
 
-  
     images: [
       {
         url: {
@@ -125,31 +169,29 @@ const CarSchema = new mongoose.Schema(
         },
         blurDataURL: {
           type: String,
-        //  required: [true, 'image-blur-data-url-required-error'],
+          //  required: [true, 'image-blur-data-url-required-error'],
         },
       },
     ],
 
     cover: {
-        _id: {
-          type: String,
-          required: [true, 'image-id-required-error'],
-        },
-        url: {
-          type: String,
-          required: [true, 'image-url-required-error'],
-        },
-        blurDataURL: {
-          type: String,
-     //     required: [true, 'image-blur-data-url-required-error'],
-        },
+      _id: {
+        type: String,
+        required: [true, "image-id-required-error"],
       },
-
-      show: {
-        type: Boolean,
+      url: {
+        type: String,
+        required: [true, "image-url-required-error"],
       },
-  
+      blurDataURL: {
+        type: String,
+        //     required: [true, 'image-blur-data-url-required-error'],
+      },
+    },
 
+    show: {
+      type: Boolean,
+    },
 
     // colors: [String],
     // sizes: [String],
@@ -157,6 +199,5 @@ const CarSchema = new mongoose.Schema(
   { timestamps: true, strict: true }
 );
 
-const Car =
-  mongoose.models.Car || mongoose.model('Car', CarSchema);
+const Car = mongoose.models.Car || mongoose.model("Car", CarSchema);
 module.exports = Car;

@@ -43,10 +43,21 @@ const BlogSchema = new mongoose.Schema(
       //required: [true, 'Status is required.'],
     },
 
+    tags :[String],
+    author: {
+      type: String,
+      
+      //required: [true, "please provide an author id"],
+    },
+
     show: {
       type: Boolean,
     },
-
+    category: {
+      type: mongoose.Types.ObjectId,
+      ref: "BlogCategory",
+      required: [true, "please provide a category id"],
+    },
   },
   {
     timestamps: true,

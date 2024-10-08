@@ -1,10 +1,12 @@
 const Blogs = require("../models/blog");
+const Category = require("../models/CategoryBlog");
 const getBlurDataURL = require("../config/getBlurDataURL");
 
 const {
   multiFilesDelete,
   singleFileDelete,
 } = require("../config/digitalOceanFunctions");
+const Blog = require("../models/blog");
 
 
 const createBlog = async (req, res) => {
@@ -32,7 +34,7 @@ const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blogs.find().sort({
       createdAt: -1,
-    });
+    }).populate("category");
     res.status(201).json({
       success: true,
       data: blogs,
@@ -45,7 +47,7 @@ const getAllBlogs = async (req, res) => {
 const getBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const blog = await Blogs.findOne({ slug });
+    const blog = await Blogs.findOne({ slug }).populate("category");
 
     if (!blog) {
       return res.status(404).json({ message: "Blog Not Found" });
@@ -116,7 +118,7 @@ const getBlogs = async (req, res) => {
   try {
     const blogs = await Blogs.find().sort({
       createdAt: -1,
-    });
+    }).populate("category");
 
     res.status(201).json({
       success: true,
@@ -169,7 +171,7 @@ const getBlogsPagination = async (req, res) => {
     ).sort(
       sortOption
       //  {  createdAt: -1, }
-    );
+    ).populate("category");
 
     console.log("cars-->", sizes);
 
@@ -184,6 +186,125 @@ const getBlogsPagination = async (req, res) => {
   }
 };
 
+
+
+
+const getFiltersByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    // Fetch category data
+    const categoryData = await Category.findOne({ slug: category }).select([
+      "_id",
+      "name",
+    ]);
+    if (!categoryData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category Not Found" });
+    }
+
+    // Fetch cars for the category under the specified shop
+    const cars = await Car.find({
+      // status: { $ne: 'disabled' },
+      category: categoryData._id,
+    }).select(["brand"]); // Only select brand
+
+    // Extract unique brands
+    const brands = [...new Set(cars.map((car) => car.brand))].filter(Boolean); // Clean brands
+    console.log("brands-->", brands);
+
+    // Construct the response object for category and brands
+    const response = {
+      category: categoryData, // Include category details
+      brands,
+    };
+
+    res.status(200).json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getFilters = async (req, res) => {
+  try {
+    // Fetch categories (assuming you have a Category model)
+    const categories = await Category.find({
+      // status: { $ne: "disabled" },
+    }).select(["name", "slug"]); // Adjust the fields according to your Category schema
+
+
+//get tags from blogs tags is array of strings in blog schema
+    const tags = await Blogs.find().distinct("tags");
+
+
+    // Construct the response object for brands and categories
+    const response = {
+    
+      categories,
+      tags,
+    
+    };
+
+    res.status(200).json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
+const getBlogsFilter = async (req, res) => {
+  try {
+    const query = req.query; // Extract query params from request
+
+    // Create a new query object for filtering
+    const newQuery = {
+      tags: query.tags ? query.tags.split("_") : undefined,
+      categoryId: query.category 
+    };
+
+    // Remove pagination related parameters from the query
+    const limit = Number(query.limit) || 10; // Default limit if not provided
+    const page = Number(query.page) || 1; // Default to page 1 if not provided
+    const skip = limit * (page - 1); // Calculate the skip value
+
+    // Prepare the query for fetching blogs
+    const totalBlogs = await Blog.countDocuments({
+      ...(newQuery.tags && { tags: { $in: newQuery.tags } }),
+      ...(newQuery.categoryId && { category:newQuery.categoryId }),
+    });
+
+    const blogs = await Blog.find({
+      ...(newQuery.tags && { tags: { $in: newQuery.tags } }),
+      ...(newQuery.categoryId && { category: newQuery.categoryId }),
+    })
+      .skip(skip)
+      .limit(limit)
+      .populate("category") // Assuming you want to populate category details
+      
+
+    res.status(200).json({
+      success: true,
+      data: blogs,
+      total: totalBlogs,
+      count: Math.ceil(totalBlogs / limit),
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
   createBlog,
   getAllBlogs,
@@ -192,4 +313,7 @@ module.exports = {
   deleteBlogBySlug,
   getBlogs,
   getBlogsPagination,
+  //frontend
+  getBlogsFilter,
+getFilters
 };

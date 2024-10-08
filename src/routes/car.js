@@ -21,9 +21,11 @@ router.delete("/admin/car/:slug", verifyToken,  Car.deleteCarBySlug);
 
 router.get("/admin/carsnopagination", verifyToken, Car.getAllCarsWithoutPagination);
 
-router.get('/cars', Car.getCarsFilter);
+
 router.get('/cars/category/:category', Car.getFiltersByCategory);
 
+//filter cars in frontend
+router.get('/cars', Car.getCarsFilter);
 router.get('/cars/filter', Car.getFilters);
 
 

@@ -518,6 +518,7 @@ const getCarsFilter = async (req, res) => {
     delete newQuery.seats;
     delete newQuery.doors;
     delete newQuery.fuelTypes;
+    delete newQuery.bodytypes;
     //type automatically added to query object
     delete newQuery.type;
 
@@ -583,6 +584,16 @@ const getCarsFilter = async (req, res) => {
           }
         }
 
+        //bodytype is added to query object
+        let bodytypeArray = [];
+        if (query.bodytypes) {
+          if (typeof query.bodytypes === 'string') {
+            bodytypeArray = query.bodytypes.split("_"); // Convert to array of strings
+          } else if (Array.isArray(query.bodytypes)) {
+            bodytypeArray = query.bodytypes; // If it's already an array
+          }
+        }
+
 
 
     const skip = Number(query.limit) || 12;
@@ -594,6 +605,8 @@ const getCarsFilter = async (req, res) => {
        ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
        //fueltypes is added here
        ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
+       //bodytype is added here
+       ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
        //type is added here
        ...(typeArray.length > 0 && { type: { $in: typeArray } }),
       price: {
@@ -612,8 +625,31 @@ const getCarsFilter = async (req, res) => {
           localField: "reviews",
           foreignField: "_id",
           as: "reviews",
-        },
+        }
+      }
+        ,
+        {
+
+        $lookup: {
+          from: "brands", // Name of the brands collection
+          localField: "brand", // Field in Car schema
+          foreignField: "_id", // Field in brands collection
+          as: "brandDetails", // Output field for brand details
+        }
       },
+
+        {
+        $lookup: {
+          from: "categories", // Name of the categories collection
+          localField: "category", // Field in Car schema
+          foreignField: "_id", // Field in categories collection
+          as: "categoryDetails", // Output field for category details
+        }
+        },
+    
+ 
+      
+      
       {
         $addFields: {
           averageRating: { $avg: "$reviews.rating" },
@@ -631,6 +667,7 @@ const getCarsFilter = async (req, res) => {
            ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
        ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
          ...(typeArray.length > 0 && { type: { $in: typeArray } }),
+           ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
 
           ...(query.colors && { colors: { $in: query.colors.split("_") } }),
           ...(query.prices && {
@@ -645,6 +682,8 @@ const getCarsFilter = async (req, res) => {
         $project: {
          // image: { url: "$image.url", blurDataURL: "$image.blurDataURL" },
           image: { url: "$cover.url", blurDataURL: "$cover.blurDataURL" },
+        
+          images: 1,
 
           name: 1,
           available: 1,
@@ -657,6 +696,16 @@ const getCarsFilter = async (req, res) => {
           averageRating: 1,
           vendor: 1,
           createdAt: 1,
+          seats: 1,
+          doors: 1,
+          fueltype: 1,
+          
+          type: 1,
+          
+          // populate brand and category
+          brand: { $arrayElemAt: ["$brandDetails", 0] }, // Include the first brand detail
+          category: { $arrayElemAt: ["$categoryDetails", 0] }, // Include the first category detail
+
         },
       },
       {
@@ -676,6 +725,8 @@ const getCarsFilter = async (req, res) => {
         $limit: Number(skip),
       },
     ]);
+
+    console.log("products-->", products);
 
     res.status(200).json({
       success: true,

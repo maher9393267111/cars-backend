@@ -26,4 +26,10 @@ router.delete("/admin/blog/:slug", verifyToken, blog.deleteBlogBySlug);
 router.get("/admin/blogs-all", blog.getBlogsPagination);
 
 
+//filter cars in frontend
+router.get('/blogs', blog.getBlogsFilter);
+// get tags and categories for filter in frontend blogs
+router.get('/blogs/filter', blog.getFilters);
+
+
 module.exports = router;

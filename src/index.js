@@ -68,6 +68,8 @@ const car = require("./routes/car");
 const  blog = require("./routes/blog");
 
 const siteReview = require("./routes/siteViews");
+const blogcategory = require("./routes/blogCategory");
+
 
 
 
@@ -102,6 +104,7 @@ app.use("/api", fileRouter);
 app.use("/api", car);
 app.use("/api", siteReview);
 app.use("/api", blog);
+app.use("/api", blogcategory);
 
 
 
