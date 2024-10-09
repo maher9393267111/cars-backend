@@ -28,6 +28,8 @@ const SiteInfoSchema = new mongoose.Schema({
    // trim: true,
   },
 
+  
+
   facebook: {
     type: String},
 
