@@ -8,9 +8,7 @@ const CarSchema = new mongoose.Schema(
     code: {
       type: String,
     },
-    status: {
-      type: String,
-    },
+   
 
     doors: {
       type: Number,
@@ -192,6 +190,24 @@ const CarSchema = new mongoose.Schema(
     show: {
       type: Boolean,
     },
+
+    // ishome is boolean to show this cars true in home page
+    ishome: {
+      type: Boolean,
+      default: false,
+    },
+
+    isavaliable: {
+      type: Boolean,
+      default: true,
+    },
+
+    status: {
+      type: String,
+    
+    },
+
+    
 
     // colors: [String],
     // sizes: [String],

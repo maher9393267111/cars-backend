@@ -182,6 +182,7 @@ const getCarBySlug = async (req, res) => {
       return res.status(404).json({ message: "Car Not Found" });
     }
 
+    console.log("car-->", car);
     res.status(201).json({
       success: true,
       data: car,
@@ -521,6 +522,7 @@ const getCarsFilter = async (req, res) => {
     delete newQuery.bodytypes;
     //type automatically added to query object
     delete newQuery.type;
+    delete newQuery.ishome;
 
     for (const [key, value] of Object.entries(newQuery)) {
       if (typeof value === 'string') {
@@ -594,7 +596,7 @@ const getCarsFilter = async (req, res) => {
           }
         }
 
-
+console.log("isHomXXXX-->", query.ishome);
 
     const skip = Number(query.limit) || 12;
     const totalProducts = await Car.countDocuments({
@@ -609,6 +611,8 @@ const getCarsFilter = async (req, res) => {
        ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
        //type is added here
        ...(typeArray.length > 0 && { type: { $in: typeArray } }),
+       //ishome is added here
+       ...(query.ishome && { ishome: Boolean(query.ishome) }),
       price: {
         $gt: query.prices ? Number(query.prices.split("_")[0]) : 1,
         $lt: query.prices ? Number(query.prices.split("_")[1]) : 1000000,
@@ -668,6 +672,7 @@ const getCarsFilter = async (req, res) => {
        ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
          ...(typeArray.length > 0 && { type: { $in: typeArray } }),
            ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
+           ...(query.ishome && { ishome: Boolean(query.ishome) }),
 
           ...(query.colors && { colors: { $in: query.colors.split("_") } }),
           ...(query.prices && {
@@ -726,7 +731,7 @@ const getCarsFilter = async (req, res) => {
       },
     ]);
 
-    console.log("products-->", products);
+    console.log("products-->", query);
 
     res.status(200).json({
       success: true,

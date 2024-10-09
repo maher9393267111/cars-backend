@@ -68,7 +68,11 @@ const car = require("./routes/car");
 const  blog = require("./routes/blog");
 
 const siteReview = require("./routes/siteViews");
-const blogcategory = require("./routes/blogCategory");
+const blogcategory = require("./routes/blogCategory")
+const about = require("./routes/about")
+const info = require("./routes/info")
+
+
 
 
 
@@ -105,6 +109,10 @@ app.use("/api", car);
 app.use("/api", siteReview);
 app.use("/api", blog);
 app.use("/api", blogcategory);
+app.use("/api", about);
+app.use("/api", info);
+
+
 
 
 
