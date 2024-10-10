@@ -100,6 +100,11 @@ const CarSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Brand",
     },
+    model: {
+      type: mongoose.Types.ObjectId,
+      ref: "Model",
+    },
+
     likes: {
       type: Number,
     },

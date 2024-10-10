@@ -71,6 +71,8 @@ const siteReview = require("./routes/siteViews");
 const blogcategory = require("./routes/blogCategory")
 const about = require("./routes/about")
 const info = require("./routes/info")
+const model = require("./routes/model")
+
 
 
 
@@ -111,6 +113,8 @@ app.use("/api", blog);
 app.use("/api", blogcategory);
 app.use("/api", about);
 app.use("/api", info);
+app.use("/api", model);
+
 
 
 

@@ -1,6 +1,8 @@
 const Car = require("../models/car");
 const Category = require("../models/Category");
 const Brand = require("../models/Brand");
+const Model = require("../models/model");
+
 
 const {
   getAdmin,
@@ -308,18 +310,24 @@ const getFilters = async (req, res) => {
   try {
     // Fetch categories (assuming you have a Category model)
     const categories = await Category.find({
-      status: { $ne: "disabled" },
+    //  status: { $ne: "disabled" },
     }).select(["name", "slug"]); // Adjust the fields according to your Category schema
 
     // Fetch brands
     const brands = await Brand.find({
-      status: { $ne: "disabled" },
+   //   status: { $ne: "disabled" },
     }).select(["name", "slug"]);
+
+    const models = await Model.find({
+      //   status: { $ne: "disabled" },
+       }).select(["name", "slug" ,"_id" , "brand" ]);
+
 
     // Construct the response object for brands and categories
     const response = {
       brands,
       categories,
+      models,
       prices: [1, 100000000],
     };
 
@@ -523,6 +531,9 @@ const getCarsFilter = async (req, res) => {
     //type automatically added to query object
     delete newQuery.type;
     delete newQuery.ishome;
+    delete newQuery.models;
+
+
 
     for (const [key, value] of Object.entries(newQuery)) {
       if (typeof value === 'string') {
@@ -544,6 +555,22 @@ const getCarsFilter = async (req, res) => {
       }).select("_id");
       categoryIds = categories.map((category) => category._id);
     }
+
+
+    let modelIds = [];
+    if (query.models && query.models.length > 0) {
+      const modelSlugs = query.models.split("_"); // Split categories by '_'
+
+      // Fetch the category IDs based on the slugs
+      const models = await Model.find({
+        slug: { $in: modelSlugs },
+      }).select("_id");
+   modelIds = models.map((model) => model._id);
+    }
+
+
+
+
 
 
         // Handle query.seats properly
@@ -596,13 +623,14 @@ const getCarsFilter = async (req, res) => {
           }
         }
 
-console.log("isHomXXXX-->", query.ishome);
+console.log("isHomXXXX-->", newQuery ,modelIds);
 
     const skip = Number(query.limit) || 12;
     const totalProducts = await Car.countDocuments({
       ...newQuery,
       ...(Boolean(query.brand) && { brand: brand._id }),
       ...(categoryIds.length > 0 && { category: { $in: categoryIds } }),
+      ...(modelIds.length > 0 && { model: { $in: modelIds } }),
       ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }), 
        ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
        //fueltypes is added here
@@ -664,6 +692,8 @@ console.log("isHomXXXX-->", query.ishome);
         $match: {
           ...(Boolean(query.brand) && { brand: brand._id }),
           ...(query.categories && { category: { $in: categoryIds } }),
+      ...(modelIds.length > 0 && { model: { $in: modelIds } }),
+
           ...(query.isFeatured && { isFeatured: Boolean(query.isFeatured) }),
           ...(query.gender && { gender: { $in: query.gender.split("_") } }),
           ...(query.sizes && { sizes: { $in: query.sizes.split("_") } }),
