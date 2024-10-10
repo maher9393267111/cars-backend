@@ -72,6 +72,11 @@ const blogcategory = require("./routes/blogCategory")
 const about = require("./routes/about")
 const info = require("./routes/info")
 const model = require("./routes/model")
+const  faq = require("./routes/faq")
+const feature = require("./routes/feature")
+const contact = require("./routes/contact")
+
+
 
 
 
@@ -114,6 +119,11 @@ app.use("/api", blogcategory);
 app.use("/api", about);
 app.use("/api", info);
 app.use("/api", model);
+app.use("/api", faq);
+app.use("/api", feature);
+app.use("/api", contact);
+
+
 
 
 
