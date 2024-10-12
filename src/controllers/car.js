@@ -816,7 +816,7 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
       },
     ]);
 
-    console.log("products-->", products[0]?.tags);
+  
 
     res.status(200).json({
       success: true,

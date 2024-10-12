@@ -5,7 +5,7 @@ const features = require("../controllers/carBook");
 // Import verifyToken function
 const verifyToken = require("../config/jwt");
 
-router.post("/admin/car-book", verifyToken, features.createFeature);
+router.post("/admin/car-book", features.createFeature);
 
 router.get("/admin/car-book/:id", verifyToken, features.getFeatureByAdmin);
 

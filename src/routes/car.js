@@ -12,14 +12,14 @@ router.post("/admin/car", verifyToken, Car.createCar);
 
 router.get("/admin/cars", verifyToken,  Car.getAllCars);
 
-router.get("/admin/car/:slug", verifyToken, Car.getCarBySlug);
+router.get("/admin/car/:slug", Car.getCarBySlug);
 
 router.put("/admin/car/:slug", verifyToken, Car.updateCarBySlug);
 
 router.delete("/admin/car/:slug", verifyToken,  Car.deleteCarBySlug);
 
 
-router.get("/admin/carsnopagination", verifyToken, Car.getAllCarsWithoutPagination);
+router.get("/admin/carsnopagination", Car.getAllCarsWithoutPagination);
 
 
 router.get('/cars/category/:category', Car.getFiltersByCategory);
