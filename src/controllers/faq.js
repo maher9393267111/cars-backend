@@ -213,11 +213,11 @@ const getMeAdminFaqs = async (req, res) => {
 
     const skip = parseInt(limit) || 10;
     const totalFaqs = await FAQs.find({
-      name: { $regex: search, $options: "i" },
+      question: { $regex: search, $options: "i" },
     });
     const faqs = await FAQs.find(
       {
-        name: { $regex: search, $options: "i" },
+        question: { $regex: search, $options: "i" },
       },
       null,
       {

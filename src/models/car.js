@@ -78,20 +78,22 @@ const CarSchema = new mongoose.Schema(
       type: String,
     },
 
+    features:[Object],
+
         // New fields for features
-        standardFeatures: {
-          secondRemoteKeyFob: { type: Boolean, default: false },
-          secondRowPrivacyGlass: { type: Boolean, default: false },
-          secondRowTripleWideSeat: { type: Boolean, default: false },
-          autoHeadlamps: { type: Boolean, default: false },
-          bodyColourBumper: { type: Boolean, default: false },
-          completeRearTrimBoard: { type: Boolean, default: false },
-        },
+        // standardFeatures: {
+        //   secondRemoteKeyFob: { type: Boolean, default: false },
+        //   secondRowPrivacyGlass: { type: Boolean, default: false },
+        //   secondRowTripleWideSeat: { type: Boolean, default: false },
+        //   autoHeadlamps: { type: Boolean, default: false },
+        //   bodyColourBumper: { type: Boolean, default: false },
+        //   completeRearTrimBoard: { type: Boolean, default: false },
+        // },
         
-        extraFeatures: {
-          secondRemoteKeyFob: { type: Boolean, default: false },
-          secondRowPrivacyGlass: { type: Boolean, default: false },
-        },
+        // extraFeatures: {
+        //   secondRemoteKeyFob: { type: Boolean, default: false },
+        //   secondRowPrivacyGlass: { type: Boolean, default: false },
+        // },
 
     isFeatured: {
       type: Boolean,

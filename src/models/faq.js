@@ -13,6 +13,11 @@ const faqSchema = new mongoose.Schema({
     type: Boolean,
     default: true, // Default value is true
   },
+  slug: {
+    type: String,
+    unique: true,
+    required: [true, 'Slug is required.'],
+  },
 }, {
   timestamps: true, // Adds createdAt and updatedAt fields
 });

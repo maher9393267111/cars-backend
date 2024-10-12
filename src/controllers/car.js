@@ -165,27 +165,80 @@ const getCars = async (req, res) => {
   }
 };
 
+// const getCarBySlug = async (req, res) => {
+//   try {
+//     const { slug } = req.params;
+//     const { client } = req.query;
+
+
+ 
+
+//     const car = await Car.findOne({ slug })
+//     .populate([
+//       {
+//         path: "category",
+//         select: ["name", "_id"],
+//       },
+//       {
+//         path: "brand",
+//         select: ["_id", "name"],
+//       },
+
+//       {
+//         path: "model",
+//         select: ["_id", "name"],
+//       },
+//     ]);
+
+
+//     if (!car) {
+//       return res.status(404).json({ message: "Car Not Found" });
+//     }
+
+//     console.log("car-->", car);
+//     res.status(201).json({
+//       success: true,
+//       data: car,
+//     });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
+
+
 const getCarBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const car = await Car.findOne({ slug });
-    // .populate([
-    //   {
-    //     path: "category",
-    //     select: ["name", "_id"],
-    //   },
-    //   {
-    //     path: "brand",
-    //     select: ["_id", "name"],
-    //   },
-    // ]);
+    const { client } = req.query;
+
+    let query = Car.findOne({ slug });
+
+    if (client === 'true') {
+      query = query.populate([
+        {
+          path: "category",
+          select: ["name", "_id"],
+        },
+        {
+          path: "brand",
+          select: ["_id", "name"],
+        },
+        {
+          path: "model",
+          select: ["_id", "name"],
+        },
+      ]);
+    }
+
+    const car = await query.exec();
 
     if (!car) {
       return res.status(404).json({ message: "Car Not Found" });
     }
 
     console.log("car-->", car);
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       data: car,
     });
@@ -193,6 +246,7 @@ const getCarBySlug = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 const updateCarBySlug = async (req, res) => {
   try {
@@ -734,6 +788,7 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
           seats: 1,
           doors: 1,
           fueltype: 1,
+          tags:1,
           
           type: 1,
           
@@ -761,7 +816,7 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
       },
     ]);
 
-    console.log("products-->", query);
+    console.log("products-->", products[0]?.tags);
 
     res.status(200).json({
       success: true,

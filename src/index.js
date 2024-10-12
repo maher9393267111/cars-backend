@@ -75,6 +75,10 @@ const model = require("./routes/model")
 const  faq = require("./routes/faq")
 const feature = require("./routes/feature")
 const contact = require("./routes/contact")
+const sectionOne = require("./routes/sectionOne")
+const carBook = require("./routes/carBook")
+
+
 
 
 
@@ -122,6 +126,11 @@ app.use("/api", model);
 app.use("/api", faq);
 app.use("/api", feature);
 app.use("/api", contact);
+app.use("/api", sectionOne);
+app.use("/api", carBook);
+
+
+
 
 
 
