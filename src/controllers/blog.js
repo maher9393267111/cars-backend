@@ -1,7 +1,7 @@
 const Blogs = require("../models/blog");
 const Category = require("../models/CategoryBlog");
 const getBlurDataURL = require("../config/getBlurDataURL");
-
+const moment = require('moment');
 const {
   multiFilesDelete,
   singleFileDelete,
@@ -44,6 +44,25 @@ const getAllBlogs = async (req, res) => {
   }
 };
 
+// const getBlogBySlug = async (req, res) => {
+//   try {
+//     const { slug } = req.params;
+//     const blog = await Blogs.findOne({ slug }).populate("category");
+
+//     if (!blog) {
+//       return res.status(404).json({ message: "Blog Not Found" });
+//     }
+
+//     res.status(201).json({
+//       success: true,
+//       data: blog,
+//     });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
+
 const getBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -53,14 +72,43 @@ const getBlogBySlug = async (req, res) => {
       return res.status(404).json({ message: "Blog Not Found" });
     }
 
-    res.status(201).json({
+    // Find next and previous blog posts
+    const nextBlog = await Blogs.findOne({ createdAt: { $gt: blog.createdAt } })
+      .sort({ createdAt: 1 })
+      .select('title slug');
+    
+    const prevBlog = await Blogs.findOne({ createdAt: { $lt: blog.createdAt } })
+      .sort({ createdAt: -1 })
+      .select('title slug');
+
+    // Get last 3 recent posts
+    const recentPosts = await Blogs.find({ _id: { $ne: blog._id } })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .select('name slug createdAt logo ');
+
+    // Convert createdAt to "from now" format
+    const formattedBlog = {
+      ...blog.toObject(),
+      createdAtFromNow: moment(blog.createdAt).fromNow(),
+    };
+
+    res.status(200).json({
       success: true,
-      data: blog,
+      data: formattedBlog,
+      nextBlog,
+      prevBlog,
+      recentPosts: recentPosts.map(post => ({
+        ...post.toObject(),
+        createdAtFromNow: moment(post.createdAt).fromNow(),
+      })),
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
+
 
 const updateBlogBySlug = async (req, res) => {
   try {
