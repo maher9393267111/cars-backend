@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
+
 
 const ItemSchema = new mongoose.Schema({
   title: {
@@ -37,4 +38,4 @@ const SectionSchema = new mongoose.Schema({
 
 const Section = mongoose.models.Section || mongoose.model('SectionTwo', SectionSchema);
 
-export default Section;
+module.exports = Section;

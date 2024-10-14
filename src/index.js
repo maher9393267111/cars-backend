@@ -77,6 +77,8 @@ const feature = require("./routes/feature")
 const contact = require("./routes/contact")
 const sectionOne = require("./routes/sectionOne")
 const carBook = require("./routes/carBook")
+const sectionTwo = require("./routes/sectionTwo")
+
 
 
 
@@ -127,6 +129,8 @@ app.use("/api", faq);
 app.use("/api", feature);
 app.use("/api", contact);
 app.use("/api", sectionOne);
+app.use("/api", sectionTwo);
+
 app.use("/api", carBook);
 
 
