@@ -67,7 +67,7 @@ const CarSchema = new mongoose.Schema(
     },
 
     year: {
-      type: String,
+      type: Number,
     },
 
     ulez: {

@@ -15,6 +15,41 @@ const {
   singleFileDelete,
 } = require("../config/digitalOceanFunctions");
 
+
+const getHomepageCars = async (req, res) => {
+  try {
+    const homepageCars = await Car.find({ ishome: true })
+      .limit(6)
+      .sort({ createdAt: -1 })
+      .populate([
+        {
+          path: "category",
+          select: ["name", "_id"],
+        },
+        {
+          path: "brand",
+          select: ["_id", "name" ,"logo"],
+        },
+      ]);
+
+    res.status(200).json({
+      success: true,
+      data: homepageCars,
+    });
+  } catch (error) {
+    console.error("Error fetching homepage cars:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
+
+
+
 const createCar = async (req, res) => {
   try {
     // const admin = await getAdmin(req, res);
@@ -171,7 +206,7 @@ const getCars = async (req, res) => {
 //     const { client } = req.query;
 
 
- 
+
 
 //     const car = await Car.findOne({ slug })
 //     .populate([
@@ -364,17 +399,17 @@ const getFilters = async (req, res) => {
   try {
     // Fetch categories (assuming you have a Category model)
     const categories = await Category.find({
-    //  status: { $ne: "disabled" },
+      //  status: { $ne: "disabled" },
     }).select(["name", "slug"]); // Adjust the fields according to your Category schema
 
     // Fetch brands
     const brands = await Brand.find({
-   //   status: { $ne: "disabled" },
+      //   status: { $ne: "disabled" },
     }).select(["name", "slug"]);
 
     const models = await Model.find({
       //   status: { $ne: "disabled" },
-       }).select(["name", "slug" ,"_id" , "brand" ]);
+    }).select(["name", "slug", "_id", "brand"]);
 
 
     // Construct the response object for brands and categories
@@ -586,6 +621,8 @@ const getCarsFilter = async (req, res) => {
     delete newQuery.type;
     delete newQuery.ishome;
     delete newQuery.models;
+    delete newQuery.year;
+
 
 
 
@@ -619,7 +656,7 @@ const getCarsFilter = async (req, res) => {
       const models = await Model.find({
         slug: { $in: modelSlugs },
       }).select("_id");
-   modelIds = models.map((model) => model._id);
+      modelIds = models.map((model) => model._id);
     }
 
 
@@ -627,57 +664,67 @@ const getCarsFilter = async (req, res) => {
 
 
 
-        // Handle query.seats properly
-        let seatsArray = [];
-        if (query.seats) {
-          if (typeof query.seats === 'string') {
-            seatsArray = query.seats.split("_").map(Number); // Convert to array of numbers
-          } else if (Array.isArray(query.seats)) {
-            seatsArray = query.seats.map(Number); // If it's already an array
-          }
-        }
-        //handle query.doors properly
-        let doorsArray = [];
-        if (query.doors) {
-          if (typeof query.doors === 'string') {
-            doorsArray = query.doors.split("_").map(Number); // Convert to array of numbers
-          } else if (Array.isArray(query.doors)) {
-            doorsArray = query.doors.map(Number); // If it's already an array
-          }
-        }
-        
-        // add fueltypes is string with split - and convert to array of strings and search for it in fueltypes array
+    // Handle query.seats properly
+    let seatsArray = [];
+    if (query.seats) {
+      if (typeof query.seats === 'string') {
+        seatsArray = query.seats.split("_").map(Number); // Convert to array of numbers
+      } else if (Array.isArray(query.seats)) {
+        seatsArray = query.seats.map(Number); // If it's already an array
+      }
+    }
+    //handle query.doors properly
+    let doorsArray = [];
+    if (query.doors) {
+      if (typeof query.doors === 'string') {
+        doorsArray = query.doors.split("_").map(Number); // Convert to array of numbers
+      } else if (Array.isArray(query.doors)) {
+        doorsArray = query.doors.map(Number); // If it's already an array
+      }
+    }
 
-        let fuelTypesArray = [];
-        if (query.fuelTypes) {
-          if (typeof query.fuelTypes === 'string') {
-            fuelTypesArray = query.fuelTypes.split("_"); // Convert to array of strings
-            } else if (Array.isArray(query.fuelTypes)) {
-            fuelTypesArray = query.fuelTypes; // If it's already an array
-          }
-        }
+    // add fueltypes is string with split - and convert to array of strings and search for it in fueltypes array
 
-        //type is added to query object
-        let typeArray = [];
-        if (query.type) {
-          if (typeof query.type === 'string') {
-            typeArray = query.type.split("_"); // Convert to array of strings
-          } else if (Array.isArray(query.type)) {
-            typeArray = query.type; // If it's already an array
-          }
-        }
+    let fuelTypesArray = [];
+    if (query.fuelTypes) {
+      if (typeof query.fuelTypes === 'string') {
+        fuelTypesArray = query.fuelTypes.split("_"); // Convert to array of strings
+      } else if (Array.isArray(query.fuelTypes)) {
+        fuelTypesArray = query.fuelTypes; // If it's already an array
+      }
+    }
 
-        //bodytype is added to query object
-        let bodytypeArray = [];
-        if (query.bodytypes) {
-          if (typeof query.bodytypes === 'string') {
-            bodytypeArray = query.bodytypes.split("_"); // Convert to array of strings
-          } else if (Array.isArray(query.bodytypes)) {
-            bodytypeArray = query.bodytypes; // If it's already an array
-          }
-        }
+    //type is added to query object
+    let typeArray = [];
+    if (query.type) {
+      if (typeof query.type === 'string') {
+        typeArray = query.type.split("_"); // Convert to array of strings
+      } else if (Array.isArray(query.type)) {
+        typeArray = query.type; // If it's already an array
+      }
+    }
 
-console.log("isHomXXXX-->", newQuery ,modelIds);
+    //bodytype is added to query object
+    let bodytypeArray = [];
+    if (query.bodytypes) {
+      if (typeof query.bodytypes === 'string') {
+        bodytypeArray = query.bodytypes.split("_"); // Convert to array of strings
+      } else if (Array.isArray(query.bodytypes)) {
+        bodytypeArray = query.bodytypes; // If it's already an array
+      }
+    }
+
+    let minYear, maxYear;
+    if (query.year) {
+      [minYear, maxYear] = query.year.split("_").map(Number);
+    } else {
+      minYear = 1900; // Set a reasonable minimum year
+      maxYear = new Date().getFullYear() + 1; // Current year + 1 for upcoming models
+    }
+
+
+
+    // console.log("isHomXXXX-->", query.year, minYear, maxYear, newQuery);
 
     const skip = Number(query.limit) || 12;
     const totalProducts = await Car.countDocuments({
@@ -685,19 +732,23 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
       ...(Boolean(query.brand) && { brand: brand._id }),
       ...(categoryIds.length > 0 && { category: { $in: categoryIds } }),
       ...(modelIds.length > 0 && { model: { $in: modelIds } }),
-      ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }), 
-       ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
-       //fueltypes is added here
-       ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
-       //bodytype is added here
-       ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
-       //type is added here
-       ...(typeArray.length > 0 && { type: { $in: typeArray } }),
-       //ishome is added here
-       ...(query.ishome && { ishome: Boolean(query.ishome) }),
+      ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }),
+      ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
+      //fueltypes is added here
+      ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
+      //bodytype is added here
+      ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
+      //type is added here
+      ...(typeArray.length > 0 && { type: { $in: typeArray } }),
+      //ishome is added here
+      ...(query.ishome && { ishome: Boolean(query.ishome) }),
       price: {
         $gt: query.prices ? Number(query.prices.split("_")[0]) : 1,
         $lt: query.prices ? Number(query.prices.split("_")[1]) : 1000000,
+      },
+      year: {
+        $gte: minYear,
+        $lte: maxYear,
       },
     }).select([""]);
 
@@ -713,8 +764,8 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
           as: "reviews",
         }
       }
-        ,
-        {
+      ,
+      {
 
         $lookup: {
           from: "brands", // Name of the brands collection
@@ -724,18 +775,18 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
         }
       },
 
-        {
+      {
         $lookup: {
           from: "categories", // Name of the categories collection
           localField: "category", // Field in Car schema
           foreignField: "_id", // Field in categories collection
           as: "categoryDetails", // Output field for category details
         }
-        },
-    
- 
-      
-      
+      },
+
+
+
+
       {
         $addFields: {
           averageRating: { $avg: "$reviews.rating" },
@@ -746,17 +797,17 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
         $match: {
           ...(Boolean(query.brand) && { brand: brand._id }),
           ...(query.categories && { category: { $in: categoryIds } }),
-      ...(modelIds.length > 0 && { model: { $in: modelIds } }),
+          ...(modelIds.length > 0 && { model: { $in: modelIds } }),
 
           ...(query.isFeatured && { isFeatured: Boolean(query.isFeatured) }),
           ...(query.gender && { gender: { $in: query.gender.split("_") } }),
           ...(query.sizes && { sizes: { $in: query.sizes.split("_") } }),
-          ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }), 
-           ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
-       ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
-         ...(typeArray.length > 0 && { type: { $in: typeArray } }),
-           ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
-           ...(query.ishome && { ishome: Boolean(query.ishome) }),
+          ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }),
+          ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
+          ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
+          ...(typeArray.length > 0 && { type: { $in: typeArray } }),
+          ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
+          ...(query.ishome && { ishome: Boolean(query.ishome) }),
 
           ...(query.colors && { colors: { $in: query.colors.split("_") } }),
           ...(query.prices && {
@@ -764,14 +815,22 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
               $gt: minPrice,
               $lt: maxPrice,
             },
+         
           }),
+
+          year: {
+            $gte: minYear,
+            $lte: maxYear,
+          },
+
+
         },
       },
       {
         $project: {
-         // image: { url: "$image.url", blurDataURL: "$image.blurDataURL" },
+          // image: { url: "$image.url", blurDataURL: "$image.blurDataURL" },
           image: { url: "$cover.url", blurDataURL: "$cover.blurDataURL" },
-        
+
           images: 1,
 
           name: 1,
@@ -788,10 +847,11 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
           seats: 1,
           doors: 1,
           fueltype: 1,
-          tags:1,
-          
+          tags: 1,
+
           type: 1,
-          
+          year: 1,
+
           // populate brand and category
           brand: { $arrayElemAt: ["$brandDetails", 0] }, // Include the first brand detail
           category: { $arrayElemAt: ["$categoryDetails", 0] }, // Include the first category detail
@@ -804,8 +864,8 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
             (query.price && { priceSale: Number(query.price) }) ||
             (query.name && { name: Number(query.name) }) ||
             (query.top && { averageRating: Number(query.top) }) || {
-              averageRating: -1,
-            }),
+            averageRating: -1,
+          }),
         },
       },
       {
@@ -816,7 +876,9 @@ console.log("isHomXXXX-->", newQuery ,modelIds);
       },
     ]);
 
-  
+
+    console.log("isHomXXXX-->", query.year, minYear, maxYear, newQuery , products);
+
 
     res.status(200).json({
       success: true,
@@ -846,4 +908,5 @@ module.exports = {
   getFiltersByCategory,
   getFilters,
   getCarsFilter,
+  getHomepageCars 
 };

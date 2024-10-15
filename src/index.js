@@ -65,31 +65,21 @@ const payment = require("./routes/payment");
 const currency = require("./routes/currencies");
 const compaign = require("./routes/compaign");
 const car = require("./routes/car");
-const  blog = require("./routes/blog");
+const blog = require("./routes/blog");
 
 const siteReview = require("./routes/siteViews");
-const blogcategory = require("./routes/blogCategory")
-const about = require("./routes/about")
-const info = require("./routes/info")
-const model = require("./routes/model")
-const  faq = require("./routes/faq")
-const feature = require("./routes/feature")
-const contact = require("./routes/contact")
-const sectionOne = require("./routes/sectionOne")
-const carBook = require("./routes/carBook")
-const sectionTwo = require("./routes/sectionTwo")
-
-
-
-
-
-
-
-
-
-
-
-
+const blogcategory = require("./routes/blogCategory");
+const about = require("./routes/about");
+const info = require("./routes/info");
+const model = require("./routes/model");
+const faq = require("./routes/faq");
+const feature = require("./routes/feature");
+const contact = require("./routes/contact");
+const sectionOne = require("./routes/sectionOne");
+const carBook = require("./routes/carBook");
+const sectionTwo = require("./routes/sectionTwo");
+const sectionThree = require("./routes/sectionThree");
+const service = require("./routes/service");
 
 
 //images uploader Router
@@ -130,22 +120,11 @@ app.use("/api", feature);
 app.use("/api", contact);
 app.use("/api", sectionOne);
 app.use("/api", sectionTwo);
+app.use("/api", sectionThree);
+app.use("/api", service);
+
 
 app.use("/api", carBook);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // GET API
 app.get("/", (req, res) => {

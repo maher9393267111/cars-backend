@@ -20,6 +20,8 @@ router.delete("/admin/car/:slug", verifyToken,  Car.deleteCarBySlug);
 
 
 router.get("/admin/carsnopagination", Car.getAllCarsWithoutPagination);
+router.get("/admin/cars-home", Car.getHomepageCars);
+
 
 
 router.get('/cars/category/:category', Car.getFiltersByCategory);
