@@ -16,146 +16,7 @@ const {
   singleFileDelete,
 } = require("../config/digitalOceanFunctions");
 
-// const getDashboardAnalytics = async (req, res) => {
-//   try {
-//     const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
-//     const getLastWeeksDate = () => {
-//       const now = new Date();
-//       return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
-//     };
 
-//     const getCarsReport = async (carsByYears) => {
-//       return [...new Array(12)].map(
-//         (_, i) =>
-//           carsByYears.filter(
-//             (v) =>
-//               new Date(v.createdAt).getMonth() + 1 === i + 1 &&
-//               v.sellstatus === 'sold'
-//           ).length
-//       );
-//     };
-
-//     const getIncomeReport = async (prop, carsByYears) => {
-//       const newData = carsByYears.filter((item) =>
-//         prop === 'year'
-//           ? true
-//           : prop === 'week'
-//           ? new Date(item.createdAt).getMonth() === new Date().getMonth() &&
-//             new Date(item.createdAt).getTime() > getLastWeeksDate().getTime()
-//           : new Date(item.createdAt).getMonth() === new Date().getMonth()
-//       );
-
-//       const result = await Promise.all(
-//         newData.map(async (car) => {
-//           const expenses = await Expense.find({ car: car._id });
-//           const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-//           return {
-//             ...car.toObject(),
-//             netIncome: car.price - totalExpenses
-//           };
-//         })
-//       );
-
-//       const getDayData = (date, data) =>
-//         data.filter(v => new Date(v.createdAt).getDate() === date)
-//             .reduce((sum, a) => sum + Number(a.netIncome), 0);
-
-//       if (prop === 'week') {
-//         return [...new Array(7)].map((_, i) =>
-//           getDayData(getLastWeeksDate().getDate() + 1 + i, result)
-//         );
-//       } else if (prop === 'year') {
-//         return [...new Array(12)].map((_, i) =>
-//           result.filter(v => new Date(v.createdAt).getMonth() === i)
-//                .reduce((sum, a) => sum + Number(a.netIncome), 0)
-//         );
-//       } else {
-//         return [...new Array(getDaysInMonth(new Date().getMonth() + 1, new Date().getFullYear()))]
-//           .map((_, i) => getDayData(i + 1, result));
-//       }
-//     };
-
-//     const totalUsers = await User.countDocuments({ role: 'user' });
-//     const totalBrands = await Brand.countDocuments();
-//     const totalCategories = await Category.countDocuments();
-//     const totalAvailableCars = await Car.countDocuments({ sellstatus: 'available' });
-//     const totalReservedCars = await Car.countDocuments({ sellstatus: 'reserved' });
-//     const totalSoldCars = await Car.countDocuments({ sellstatus: 'sold' });
-//     const allTimeSoldCars = await Car.countDocuments({ sellstatus: 'sold' });
-
-//     const lastYearDate = new Date();
-//     lastYearDate.setFullYear(lastYearDate.getFullYear() - 1);
-//     const todayDate = new Date();
-//     const carsByYears = await Car.find({
-//       createdAt: { $gt: lastYearDate, $lt: todayDate },
-//     }).select(['createdAt', 'sellstatus', 'price']);
-
-//     const todaysCars = carsByYears.filter(
-//       (v) =>
-//         new Date(v.createdAt).toLocaleDateString() ===
-//         new Date().toLocaleDateString()
-//     );
-
-//     const bestSellingCars = await Car.find({ sellstatus: 'sold' })
-//       .sort({ createdAt: -1 })
-//       .limit(5);
-
-//     const totalExpenses = await Expense.aggregate([
-//       { $group: { _id: null, total: { $sum: "$amount" } } }
-//     ]);
-
-//     const dailyEarning = todaysCars
-//       .filter((car) => car.sellstatus === 'sold')
-//       .reduce((partialSum, car) => partialSum + Number(car.price), 0);
-
-//     // Calculate total revenue from all sold cars
-//     const totalRevenue = await Car.aggregate([
-//       { $match: { sellstatus: 'sold' } },
-//       { $group: { _id: null, total: { $sum: "$price" } } }
-//     ]);
-
-//     // Calculate net earnings
-//     const netEarnings = (totalRevenue[0]?.total || 0) - (totalExpenses[0]?.total || 0);
-
-//     const data = {
-//       salesReport: await getCarsReport(carsByYears),
-//       bestSellingCars: bestSellingCars,
-//       carsReport: [
-//         'available',
-//         'reserved',
-//         'sold',
-//       ].map(
-//         (sellstatus) => carsByYears.filter((v) => v.sellstatus === sellstatus).length
-//       ),
-//       incomeReport: {
-//         week: await getIncomeReport('week', carsByYears),
-//         month: await getIncomeReport('month', carsByYears),
-//         year: await getIncomeReport('year', carsByYears),
-//       },
-//       totalExpenses: totalExpenses[0]?.total || 0,
-//       totalRevenue: totalRevenue[0]?.total || 0,
-//       netEarnings: netEarnings,
-//       netIncome: dailyEarning - (totalExpenses[0]?.total || 0),
-//       totalUsers,
-//       totalBrands,
-//       totalCategories,
-//       totalAvailableCars,
-//       totalReservedCars,
-//       totalSoldCars,
-//       allTimeSoldCars,
-//       dailyCars: todaysCars.filter(car => car.sellstatus === 'sold').length,
-//       dailyEarning: dailyEarning,
-//     };
-
-//     res.status(200).json({ success: true, data: data });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: 'Internal Server Error',
-//       error: error.message,
-//     });
-//   }
-// };
 
 const getDashboardAnalytics = async (req, res) => {
   try {
@@ -716,6 +577,8 @@ const getFilters = async (req, res) => {
   }
 };
 
+
+
 // const getCarsFilter = async (req, res) => {
 //   try {
 //     const query = req.query; // Extract query params from request
@@ -734,8 +597,19 @@ const getFilters = async (req, res) => {
 //     delete newQuery.rate;
 //     delete newQuery.gender;
 //     delete newQuery.seats;
+//     delete newQuery.doors;
+//     delete newQuery.fuelTypes;
+//     delete newQuery.bodytypes;
+//     //type automatically added to query object
+//     delete newQuery.type;
+//     delete newQuery.ishome;
+//     delete newQuery.models;
+//     delete newQuery.year;
+
 //     for (const [key, value] of Object.entries(newQuery)) {
-//       newQuery = { ...newQuery, [key]: value.split("_") };
+//       if (typeof value === "string") {
+//         newQuery[key] = value.split("_");
+//       }
 //     }
 
 //     const brand = await Brand.findOne({
@@ -753,28 +627,112 @@ const getFilters = async (req, res) => {
 //       categoryIds = categories.map((category) => category._id);
 //     }
 
-//     const skip = Number(query.limit) || 12;
+//     let modelIds = [];
+//     if (query.models && query.models.length > 0) {
+//       const modelSlugs = query.models.split("_"); // Split categories by '_'
+
+//       // Fetch the category IDs based on the slugs
+//       const models = await Model.find({
+//         slug: { $in: modelSlugs },
+//       }).select("_id");
+//       modelIds = models.map((model) => model._id);
+//     }
+
+//     // Handle query.seats properly
+//     let seatsArray = [];
+//     if (query.seats) {
+//       if (typeof query.seats === "string") {
+//         seatsArray = query.seats.split("_").map(Number); // Convert to array of numbers
+//       } else if (Array.isArray(query.seats)) {
+//         seatsArray = query.seats.map(Number); // If it's already an array
+//       }
+//     }
+//     //handle query.doors properly
+//     let doorsArray = [];
+//     if (query.doors) {
+//       if (typeof query.doors === "string") {
+//         doorsArray = query.doors.split("_").map(Number); // Convert to array of numbers
+//       } else if (Array.isArray(query.doors)) {
+//         doorsArray = query.doors.map(Number); // If it's already an array
+//       }
+//     }
+
+//     // add fueltypes is string with split - and convert to array of strings and search for it in fueltypes array
+
+//     let fuelTypesArray = [];
+//     if (query.fuelTypes) {
+//       if (typeof query.fuelTypes === "string") {
+//         fuelTypesArray = query.fuelTypes.split("_"); // Convert to array of strings
+//       } else if (Array.isArray(query.fuelTypes)) {
+//         fuelTypesArray = query.fuelTypes; // If it's already an array
+//       }
+//     }
+
+//     //type is added to query object
+//     let typeArray = [];
+//     if (query.type) {
+//       if (typeof query.type === "string") {
+//         typeArray = query.type.split("_"); // Convert to array of strings
+//       } else if (Array.isArray(query.type)) {
+//         typeArray = query.type; // If it's already an array
+//       }
+//     }
+
+//     //bodytype is added to query object
+//     let bodytypeArray = [];
+//     if (query.bodytypes) {
+//       if (typeof query.bodytypes === "string") {
+//         bodytypeArray = query.bodytypes.split("_"); // Convert to array of strings
+//       } else if (Array.isArray(query.bodytypes)) {
+//         bodytypeArray = query.bodytypes; // If it's already an array
+//       }
+//     }
+
+//     let minYear, maxYear;
+//     if (query.year) {
+//       [minYear, maxYear] = query.year.split("_").map(Number);
+//     } else {
+//       minYear = 1900; // Set a reasonable minimum year
+//       maxYear = new Date().getFullYear() + 1; // Current year + 1 for upcoming models
+//     }
+
+//     // console.log("isHomXXXX-->", query.year, minYear, maxYear, newQuery);
+
+//    // const skip = Number(query.limit) || 12;
+//    const limit = Number(query.limit) || 12;
+//    const page = Number(query.page) || 1;
+//    const skip = (page - 1) * limit;
+
+
 //     const totalProducts = await Car.countDocuments({
 //       ...newQuery,
 //       ...(Boolean(query.brand) && { brand: brand._id }),
-//       ...(categoryIds.length > 0 && { category: { $in: categoryIds } }), // Use the obtained category IDs
-//       //  ...(query.seats?.length > 0 && { seats: { $in: query.seats.split('_').map(Number) } }),
-//       //  ...(query.seats && { seats: { $in: query.seats.split('_') } }),
-//       // ...(query.colors && { colors: { $in: query.colors.split('_') } }),
+//       ...(categoryIds.length > 0 && { category: { $in: categoryIds } }),
+//       ...(modelIds.length > 0 && { model: { $in: modelIds } }),
+//       ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }),
+//       ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
+//       //fueltypes is added here
+//       ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
+//       //bodytype is added here
+//       ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
+//       //type is added here
+//       ...(typeArray.length > 0 && { type: { $in: typeArray } }),
+//       //ishome is added here
+//       ...(query.ishome && { ishome: Boolean(query.ishome) }),
 //       price: {
 //         $gt: query.prices ? Number(query.prices.split("_")[0]) : 1,
 //         $lt: query.prices ? Number(query.prices.split("_")[1]) : 1000000,
 //       },
-
-//       //status: { $ne: 'disabled' },
+//       year: {
+//         $gte: minYear,
+//         $lte: maxYear,
+//       },
 //     }).select([""]);
 
 //     const minPrice = query.prices ? Number(query.prices.split("_")[0]) : 1;
 //     const maxPrice = query.prices
 //       ? Number(query.prices.split("_")[1])
 //       : 10000000;
-
-//     console.log("new-->", query.seats.split("_").map(Number));
 
 //     const products = await Car.aggregate([
 //       {
@@ -786,52 +744,68 @@ const getFilters = async (req, res) => {
 //         },
 //       },
 //       {
+//         $lookup: {
+//           from: "brands", // Name of the brands collection
+//           localField: "brand", // Field in Car schema
+//           foreignField: "_id", // Field in brands collection
+//           as: "brandDetails", // Output field for brand details
+//         },
+//       },
+
+//       {
+//         $lookup: {
+//           from: "categories", // Name of the categories collection
+//           localField: "category", // Field in Car schema
+//           foreignField: "_id", // Field in categories collection
+//           as: "categoryDetails", // Output field for category details
+//         },
+//       },
+
+//       {
 //         $addFields: {
 //           averageRating: { $avg: "$reviews.rating" },
 //           image: { $arrayElemAt: ["$images", 0] },
 //         },
 //       },
-
 //       {
 //         $match: {
-//           ...(Boolean(query.brand) && {
-//             brand: brand._id,
-//           }),
+//           ...(Boolean(query.brand) && { brand: brand._id }),
+//           ...(query.categories && { category: { $in: categoryIds } }),
+//           ...(modelIds.length > 0 && { model: { $in: modelIds } }),
 
-//           ...(query.categories && {
-//             category: { $in: categoryIds },
+//           ...(query.isFeatured && { isFeatured: Boolean(query.isFeatured) }),
+//           ...(query.gender && { gender: { $in: query.gender.split("_") } }),
+//           ...(query.sizes && { sizes: { $in: query.sizes.split("_") } }),
+//           ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }),
+//           ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
+//           ...(fuelTypesArray.length > 0 && {
+//             fueltype: { $in: fuelTypesArray },
 //           }),
+//           ...(typeArray.length > 0 && { type: { $in: typeArray } }),
+//           ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
+//           ...(query.ishome && { ishome: Boolean(query.ishome) }),
 
-//           ...(query.isFeatured && {
-//             isFeatured: Boolean(query.isFeatured),
-//           }),
-
-//           ...(query.gender && {
-//             gender: { $in: query.gender.split("_") },
-//           }),
-//           ...(query.sizes && {
-//             sizes: { $in: query.sizes.split("_") },
-//           }),
-
-//           // ...(query?.seats && {
-//           //   seats: { $in: query.seats.split('_').map(Number) },
-//           // }),
-
-//           ...(query.colors && {
-//             colors: { $in: query.colors.split("_") },
-//           }),
+//           ...(query.colors && { colors: { $in: query.colors.split("_") } }),
 //           ...(query.prices && {
 //             price: {
 //               $gt: minPrice,
 //               $lt: maxPrice,
 //             },
 //           }),
-//           // status: { $ne: 'disabled' },
+
+//           year: {
+//             $gte: minYear,
+//             $lte: maxYear,
+//           },
 //         },
 //       },
 //       {
 //         $project: {
-//           image: { url: "$image.url", blurDataURL: "$image.blurDataURL" },
+//           // image: { url: "$image.url", blurDataURL: "$image.blurDataURL" },
+//           image: { url: "$cover.url", blurDataURL: "$cover.blurDataURL" },
+
+//           images: 1,
+
 //           name: 1,
 //           available: 1,
 //           slug: 1,
@@ -842,29 +816,45 @@ const getFilters = async (req, res) => {
 //           price: 1,
 //           averageRating: 1,
 //           vendor: 1,
-
 //           createdAt: 1,
+//           seats: 1,
+//           doors: 1,
+//           fueltype: 1,
+//           tags: 1,
+
+//           type: 1,
+//           year: 1,
+
+//           // populate brand and category
+//           brand: { $arrayElemAt: ["$brandDetails", 0] }, // Include the first brand detail
+//           category: { $arrayElemAt: ["$categoryDetails", 0] }, // Include the first category detail
 //         },
 //       },
 //       {
 //         $sort: {
 //           ...((query.date && { createdAt: Number(query.date) }) ||
-//             (query.price && {
-//               priceSale: Number(query.price),
-//             }) ||
+//             (query.price && { priceSale: Number(query.price) }) ||
 //             (query.name && { name: Number(query.name) }) ||
 //             (query.top && { averageRating: Number(query.top) }) || {
 //               averageRating: -1,
 //             }),
 //         },
 //       },
+//       // {
+//       //   $skip: Number(skip * parseInt(query.page ? query.page[0] - 1 : 0)),
+//       // },
+//       // {
+//       //   $limit: Number(skip),
+//       // },
 //       {
-//         $skip: Number(skip * parseInt(query.page ? query.page[0] - 1 : 0)),
+//         $skip: skip,
 //       },
 //       {
-//         $limit: Number(skip),
+//         $limit: limit,
 //       },
 //     ]);
+
+//     console.log("isHomXXXX-->", products?.length , totalProducts);
 
 //     res.status(200).json({
 //       success: true,
@@ -884,7 +874,7 @@ const getFilters = async (req, res) => {
 
 const getCarsFilter = async (req, res) => {
   try {
-    const query = req.query; // Extract query params from request
+    const query = req.query;
 
     var newQuery = { ...query };
     delete newQuery.page;
@@ -903,7 +893,6 @@ const getCarsFilter = async (req, res) => {
     delete newQuery.doors;
     delete newQuery.fuelTypes;
     delete newQuery.bodytypes;
-    //type automatically added to query object
     delete newQuery.type;
     delete newQuery.ishome;
     delete newQuery.models;
@@ -915,79 +904,67 @@ const getCarsFilter = async (req, res) => {
       }
     }
 
-    const brand = await Brand.findOne({
-      slug: query.brand,
-    }).select("slug");
+    let brand;
+    if (query.brand) {
+      brand = await Brand.findOne({ slug: query.brand }).select("_id");
+    }
 
     let categoryIds = [];
     if (query.categories && query.categories.length > 0) {
-      const categorySlugs = query.categories.split("_"); // Split categories by '_'
-
-      // Fetch the category IDs based on the slugs
-      const categories = await Category.find({
-        slug: { $in: categorySlugs },
-      }).select("_id");
+      const categorySlugs = query.categories.split("_");
+      const categories = await Category.find({ slug: { $in: categorySlugs } }).select("_id");
       categoryIds = categories.map((category) => category._id);
     }
 
     let modelIds = [];
     if (query.models && query.models.length > 0) {
-      const modelSlugs = query.models.split("_"); // Split categories by '_'
-
-      // Fetch the category IDs based on the slugs
-      const models = await Model.find({
-        slug: { $in: modelSlugs },
-      }).select("_id");
+      const modelSlugs = query.models.split("_");
+      const models = await Model.find({ slug: { $in: modelSlugs } }).select("_id");
       modelIds = models.map((model) => model._id);
     }
 
-    // Handle query.seats properly
     let seatsArray = [];
     if (query.seats) {
       if (typeof query.seats === "string") {
-        seatsArray = query.seats.split("_").map(Number); // Convert to array of numbers
+        seatsArray = query.seats.split("_").map(Number);
       } else if (Array.isArray(query.seats)) {
-        seatsArray = query.seats.map(Number); // If it's already an array
-      }
-    }
-    //handle query.doors properly
-    let doorsArray = [];
-    if (query.doors) {
-      if (typeof query.doors === "string") {
-        doorsArray = query.doors.split("_").map(Number); // Convert to array of numbers
-      } else if (Array.isArray(query.doors)) {
-        doorsArray = query.doors.map(Number); // If it's already an array
+        seatsArray = query.seats.map(Number);
       }
     }
 
-    // add fueltypes is string with split - and convert to array of strings and search for it in fueltypes array
+    let doorsArray = [];
+    if (query.doors) {
+      if (typeof query.doors === "string") {
+        doorsArray = query.doors.split("_").map(Number);
+      } else if (Array.isArray(query.doors)) {
+        doorsArray = query.doors.map(Number);
+      }
+    }
 
     let fuelTypesArray = [];
     if (query.fuelTypes) {
       if (typeof query.fuelTypes === "string") {
-        fuelTypesArray = query.fuelTypes.split("_"); // Convert to array of strings
+        fuelTypesArray = query.fuelTypes.split("_");
       } else if (Array.isArray(query.fuelTypes)) {
-        fuelTypesArray = query.fuelTypes; // If it's already an array
+        fuelTypesArray = query.fuelTypes;
       }
     }
 
-    //type is added to query object
     let typeArray = [];
     if (query.type) {
       if (typeof query.type === "string") {
-        typeArray = query.type.split("_"); // Convert to array of strings
+        typeArray = query.type.split("_");
       } else if (Array.isArray(query.type)) {
-        typeArray = query.type; // If it's already an array
+        typeArray = query.type;
       }
     }
 
-    //bodytype is added to query object
     let bodytypeArray = [];
     if (query.bodytypes) {
       if (typeof query.bodytypes === "string") {
-        bodytypeArray = query.bodytypes.split("_"); // Convert to array of strings
+        bodytypeArray = query.bodytypes.split("_");
       } else if (Array.isArray(query.bodytypes)) {
-        bodytypeArray = query.bodytypes; // If it's already an array
+        bodytypeArray = query.bodytypes;
       }
     }
 
@@ -995,167 +972,76 @@ const getCarsFilter = async (req, res) => {
     if (query.year) {
       [minYear, maxYear] = query.year.split("_").map(Number);
     } else {
-      minYear = 1900; // Set a reasonable minimum year
-      maxYear = new Date().getFullYear() + 1; // Current year + 1 for upcoming models
+      minYear = 1900;
+      maxYear = new Date().getFullYear() + 1;
     }
 
-    // console.log("isHomXXXX-->", query.year, minYear, maxYear, newQuery);
+    const limit = Number(query.limit) || 12;
+    const page = Number(query.page) || 1;
+    const skip = (page - 1) * limit;
 
-    const skip = Number(query.limit) || 12;
-    const totalProducts = await Car.countDocuments({
-      ...newQuery,
-      ...(Boolean(query.brand) && { brand: brand._id }),
+    const filter = {
+      ...(Boolean(query.brand) && { brand: brand?._id }),
       ...(categoryIds.length > 0 && { category: { $in: categoryIds } }),
       ...(modelIds.length > 0 && { model: { $in: modelIds } }),
       ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }),
       ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
-      //fueltypes is added here
       ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
-      //bodytype is added here
       ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
-      //type is added here
       ...(typeArray.length > 0 && { type: { $in: typeArray } }),
-      //ishome is added here
       ...(query.ishome && { ishome: Boolean(query.ishome) }),
-      price: {
-        $gt: query.prices ? Number(query.prices.split("_")[0]) : 1,
-        $lt: query.prices ? Number(query.prices.split("_")[1]) : 1000000,
-      },
-      year: {
-        $gte: minYear,
-        $lte: maxYear,
-      },
-    }).select([""]);
-
-    const minPrice = query.prices ? Number(query.prices.split("_")[0]) : 1;
-    const maxPrice = query.prices
-      ? Number(query.prices.split("_")[1])
-      : 10000000;
-
-    const products = await Car.aggregate([
-      {
-        $lookup: {
-          from: "productreviews",
-          localField: "reviews",
-          foreignField: "_id",
-          as: "reviews",
+      ...(query.prices && {
+        price: {
+          $gt: query.prices ? Number(query.prices.split("_")[0]) : 1,
+          $lt: query.prices ? Number(query.prices.split("_")[1]) : 1000000,
         },
-      },
-      {
-        $lookup: {
-          from: "brands", // Name of the brands collection
-          localField: "brand", // Field in Car schema
-          foreignField: "_id", // Field in brands collection
-          as: "brandDetails", // Output field for brand details
+      }),
+      ...(query.year && {
+        year: {
+          $gte: minYear,
+          $lte: maxYear,
         },
-      },
+      }),
+    };
 
-      {
-        $lookup: {
-          from: "categories", // Name of the categories collection
-          localField: "category", // Field in Car schema
-          foreignField: "_id", // Field in categories collection
-          as: "categoryDetails", // Output field for category details
-        },
-      },
+    const totalProducts = await Car.countDocuments(filter);
 
-      {
-        $addFields: {
-          averageRating: { $avg: "$reviews.rating" },
-          image: { $arrayElemAt: ["$images", 0] },
-        },
-      },
-      {
-        $match: {
-          ...(Boolean(query.brand) && { brand: brand._id }),
-          ...(query.categories && { category: { $in: categoryIds } }),
-          ...(modelIds.length > 0 && { model: { $in: modelIds } }),
+    const products = await Car.find(filter)
+      .populate({
+        path: "reviews",
+        select: "rating",
+      })
+      .populate({
+        path: "brand",
+        select: "slug name logo ",
+      })
+      .populate({
+        path: "category",
+        select: "slug name",
+      })
+      .sort({
+        ...(query.date && { createdAt: Number(query.date) }),
+        ...(query.price && { priceSale: Number(query.price) }),
+        ...(query.name && { name: Number(query.name) }),
+        ...(query.top && { averageRating: Number(query.top) }),
+      })
+      .skip(skip)
+      .limit(limit);
 
-          ...(query.isFeatured && { isFeatured: Boolean(query.isFeatured) }),
-          ...(query.gender && { gender: { $in: query.gender.split("_") } }),
-          ...(query.sizes && { sizes: { $in: query.sizes.split("_") } }),
-          ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }),
-          ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
-          ...(fuelTypesArray.length > 0 && {
-            fueltype: { $in: fuelTypesArray },
-          }),
-          ...(typeArray.length > 0 && { type: { $in: typeArray } }),
-          ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
-          ...(query.ishome && { ishome: Boolean(query.ishome) }),
-
-          ...(query.colors && { colors: { $in: query.colors.split("_") } }),
-          ...(query.prices && {
-            price: {
-              $gt: minPrice,
-              $lt: maxPrice,
-            },
-          }),
-
-          year: {
-            $gte: minYear,
-            $lte: maxYear,
-          },
-        },
-      },
-      {
-        $project: {
-          // image: { url: "$image.url", blurDataURL: "$image.blurDataURL" },
-          image: { url: "$cover.url", blurDataURL: "$cover.blurDataURL" },
-
-          images: 1,
-
-          name: 1,
-          available: 1,
-          slug: 1,
-          colors: 1,
-          discount: 1,
-          likes: 1,
-          priceSale: 1,
-          price: 1,
-          averageRating: 1,
-          vendor: 1,
-          createdAt: 1,
-          seats: 1,
-          doors: 1,
-          fueltype: 1,
-          tags: 1,
-
-          type: 1,
-          year: 1,
-
-          // populate brand and category
-          brand: { $arrayElemAt: ["$brandDetails", 0] }, // Include the first brand detail
-          category: { $arrayElemAt: ["$categoryDetails", 0] }, // Include the first category detail
-        },
-      },
-      {
-        $sort: {
-          ...((query.date && { createdAt: Number(query.date) }) ||
-            (query.price && { priceSale: Number(query.price) }) ||
-            (query.name && { name: Number(query.name) }) ||
-            (query.top && { averageRating: Number(query.top) }) || {
-              averageRating: -1,
-            }),
-        },
-      },
-      {
-        $skip: Number(skip * parseInt(query.page ? query.page[0] - 1 : 0)),
-      },
-      {
-        $limit: Number(skip),
-      },
-    ]);
-
-    console.log("isHomXXXX-->", products);
+    // Calculate average rating for each product
+    const productsWithAverageRating = products.map((product) => ({
+      ...product.toObject(),
+      averageRating: product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length,
+    }));
 
     res.status(200).json({
       success: true,
-      data: products,
+      data: productsWithAverageRating,
       total: totalProducts,
-      count: Math.ceil(totalProducts / skip),
+      count: Math.ceil(totalProducts / limit), // Use limit instead of skip
     });
   } catch (error) {
-    console.log(error.message);
+    console.error(error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -1163,6 +1049,7 @@ const getCarsFilter = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   createCar,
