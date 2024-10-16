@@ -80,6 +80,8 @@ const carBook = require("./routes/carBook");
 const sectionTwo = require("./routes/sectionTwo");
 const sectionThree = require("./routes/sectionThree");
 const service = require("./routes/service");
+const expense = require("./routes/expense");
+
 
 
 //images uploader Router
@@ -122,6 +124,8 @@ app.use("/api", sectionOne);
 app.use("/api", sectionTwo);
 app.use("/api", sectionThree);
 app.use("/api", service);
+app.use("/api", expense);
+
 
 
 app.use("/api", carBook);

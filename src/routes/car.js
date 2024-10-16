@@ -31,6 +31,12 @@ router.get('/cars', Car.getCarsFilter);
 router.get('/cars/filter', Car.getFilters);
 
 
+router.get('/admin/cars-anlaytics', Car.getDashboardAnalytics);
+
+
+
+
+
 
 
 module.exports = router;

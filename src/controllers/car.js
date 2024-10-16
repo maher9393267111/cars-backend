@@ -2,7 +2,8 @@ const Car = require("../models/car");
 const Category = require("../models/Category");
 const Brand = require("../models/Brand");
 const Model = require("../models/model");
-
+const User = require("../models/User");
+const Expense = require("../models/exoense");
 
 const {
   getAdmin,
@@ -15,6 +16,310 @@ const {
   singleFileDelete,
 } = require("../config/digitalOceanFunctions");
 
+// const getDashboardAnalytics = async (req, res) => {
+//   try {
+//     const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
+//     const getLastWeeksDate = () => {
+//       const now = new Date();
+//       return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+//     };
+
+//     const getCarsReport = async (carsByYears) => {
+//       return [...new Array(12)].map(
+//         (_, i) =>
+//           carsByYears.filter(
+//             (v) =>
+//               new Date(v.createdAt).getMonth() + 1 === i + 1 &&
+//               v.sellstatus === 'sold'
+//           ).length
+//       );
+//     };
+
+//     const getIncomeReport = async (prop, carsByYears) => {
+//       const newData = carsByYears.filter((item) =>
+//         prop === 'year'
+//           ? true
+//           : prop === 'week'
+//           ? new Date(item.createdAt).getMonth() === new Date().getMonth() &&
+//             new Date(item.createdAt).getTime() > getLastWeeksDate().getTime()
+//           : new Date(item.createdAt).getMonth() === new Date().getMonth()
+//       );
+
+//       const result = await Promise.all(
+//         newData.map(async (car) => {
+//           const expenses = await Expense.find({ car: car._id });
+//           const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+//           return {
+//             ...car.toObject(),
+//             netIncome: car.price - totalExpenses
+//           };
+//         })
+//       );
+
+//       const getDayData = (date, data) =>
+//         data.filter(v => new Date(v.createdAt).getDate() === date)
+//             .reduce((sum, a) => sum + Number(a.netIncome), 0);
+
+//       if (prop === 'week') {
+//         return [...new Array(7)].map((_, i) =>
+//           getDayData(getLastWeeksDate().getDate() + 1 + i, result)
+//         );
+//       } else if (prop === 'year') {
+//         return [...new Array(12)].map((_, i) =>
+//           result.filter(v => new Date(v.createdAt).getMonth() === i)
+//                .reduce((sum, a) => sum + Number(a.netIncome), 0)
+//         );
+//       } else {
+//         return [...new Array(getDaysInMonth(new Date().getMonth() + 1, new Date().getFullYear()))]
+//           .map((_, i) => getDayData(i + 1, result));
+//       }
+//     };
+
+//     const totalUsers = await User.countDocuments({ role: 'user' });
+//     const totalBrands = await Brand.countDocuments();
+//     const totalCategories = await Category.countDocuments();
+//     const totalAvailableCars = await Car.countDocuments({ sellstatus: 'available' });
+//     const totalReservedCars = await Car.countDocuments({ sellstatus: 'reserved' });
+//     const totalSoldCars = await Car.countDocuments({ sellstatus: 'sold' });
+//     const allTimeSoldCars = await Car.countDocuments({ sellstatus: 'sold' });
+
+//     const lastYearDate = new Date();
+//     lastYearDate.setFullYear(lastYearDate.getFullYear() - 1);
+//     const todayDate = new Date();
+//     const carsByYears = await Car.find({
+//       createdAt: { $gt: lastYearDate, $lt: todayDate },
+//     }).select(['createdAt', 'sellstatus', 'price']);
+
+//     const todaysCars = carsByYears.filter(
+//       (v) =>
+//         new Date(v.createdAt).toLocaleDateString() ===
+//         new Date().toLocaleDateString()
+//     );
+
+//     const bestSellingCars = await Car.find({ sellstatus: 'sold' })
+//       .sort({ createdAt: -1 })
+//       .limit(5);
+
+//     const totalExpenses = await Expense.aggregate([
+//       { $group: { _id: null, total: { $sum: "$amount" } } }
+//     ]);
+
+//     const dailyEarning = todaysCars
+//       .filter((car) => car.sellstatus === 'sold')
+//       .reduce((partialSum, car) => partialSum + Number(car.price), 0);
+
+//     // Calculate total revenue from all sold cars
+//     const totalRevenue = await Car.aggregate([
+//       { $match: { sellstatus: 'sold' } },
+//       { $group: { _id: null, total: { $sum: "$price" } } }
+//     ]);
+
+//     // Calculate net earnings
+//     const netEarnings = (totalRevenue[0]?.total || 0) - (totalExpenses[0]?.total || 0);
+
+//     const data = {
+//       salesReport: await getCarsReport(carsByYears),
+//       bestSellingCars: bestSellingCars,
+//       carsReport: [
+//         'available',
+//         'reserved',
+//         'sold',
+//       ].map(
+//         (sellstatus) => carsByYears.filter((v) => v.sellstatus === sellstatus).length
+//       ),
+//       incomeReport: {
+//         week: await getIncomeReport('week', carsByYears),
+//         month: await getIncomeReport('month', carsByYears),
+//         year: await getIncomeReport('year', carsByYears),
+//       },
+//       totalExpenses: totalExpenses[0]?.total || 0,
+//       totalRevenue: totalRevenue[0]?.total || 0,
+//       netEarnings: netEarnings,
+//       netIncome: dailyEarning - (totalExpenses[0]?.total || 0),
+//       totalUsers,
+//       totalBrands,
+//       totalCategories,
+//       totalAvailableCars,
+//       totalReservedCars,
+//       totalSoldCars,
+//       allTimeSoldCars,
+//       dailyCars: todaysCars.filter(car => car.sellstatus === 'sold').length,
+//       dailyEarning: dailyEarning,
+//     };
+
+//     res.status(200).json({ success: true, data: data });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: 'Internal Server Error',
+//       error: error.message,
+//     });
+//   }
+// };
+
+const getDashboardAnalytics = async (req, res) => {
+  try {
+    const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
+    const getLastWeeksDate = () => {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+    };
+
+    const getCarsReport = async (carsByYears) => {
+      return [...new Array(12)].map(
+        (_, i) =>
+          carsByYears.filter(
+            (v) =>
+              new Date(v.createdAt).getMonth() + 1 === i + 1 &&
+              v.sellstatus === "sold"
+          ).length
+      );
+    };
+
+    const getIncomeReport = async (prop, carsByYears) => {
+      const newData = carsByYears.filter((item) =>
+        prop === "year"
+          ? true
+          : prop === "week"
+          ? new Date(item.createdAt).getMonth() === new Date().getMonth() &&
+            new Date(item.createdAt).getTime() > getLastWeeksDate().getTime()
+          : new Date(item.createdAt).getMonth() === new Date().getMonth()
+      );
+
+      const result = await Promise.all(
+        newData.map(async (car) => {
+          const expenses = await Expense.find({ car: car._id });
+          const totalExpenses = expenses.reduce(
+            (sum, expense) => sum + expense.amount,
+            0
+          );
+          return {
+            ...car.toObject(),
+            netIncome: car.price - totalExpenses,
+          };
+        })
+      );
+
+      const getDayData = (date, data) =>
+        data
+          .filter((v) => new Date(v.createdAt).getDate() === date)
+          .reduce((sum, a) => sum + Number(a.netIncome), 0);
+
+      if (prop === "week") {
+        return [...new Array(7)].map((_, i) =>
+          getDayData(getLastWeeksDate().getDate() + i, result)
+        );
+      } else if (prop === "year") {
+        return [...new Array(12)].map((_, i) =>
+          result
+            .filter((v) => new Date(v.createdAt).getMonth() === i)
+            .reduce((sum, a) => sum + Number(a.netIncome), 0)
+        );
+      } else {
+        return [
+          ...new Array(
+            getDaysInMonth(new Date().getMonth() + 1, new Date().getFullYear())
+          ),
+        ].map((_, i) => getDayData(i + 1, result));
+      }
+    };
+
+    const totalUsers = await User.countDocuments({ role: "user" });
+    const totalBrands = await Brand.countDocuments();
+    const totalCategories = await Category.countDocuments();
+    const totalAvailableCars = await Car.countDocuments({
+      sellstatus: "available",
+    });
+
+    const lastYearDate = new Date();
+    lastYearDate.setFullYear(lastYearDate.getFullYear() - 1);
+    const todayDate = new Date();
+    const carsByYears = await Car.find({
+      createdAt: { $gt: lastYearDate, $lt: todayDate },
+    }).select(["createdAt", "sellstatus", "price"]);
+
+    // Fetch cars sold today
+    const todaysCars = await Car.find({
+      soldDate: {
+        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      },
+    });
+
+    // Calculate total sold cars and net income for sold cars
+    const soldCars = await Car.find({ sellstatus: "sold" });
+    const totalSoldCars = soldCars.length;
+
+    let netIncomeSoldCars = 0;
+    await Promise.all(
+      soldCars.map(async (car) => {
+        const expenses = await Expense.find({ car: car._id });
+        const totalExpenses = expenses.reduce(
+          (sum, expense) => sum + expense.amount,
+          0
+        );
+        netIncomeSoldCars += car.price - totalExpenses;
+      })
+    );
+
+    const bestSellingCars = await Car.find({ sellstatus: "sold" })
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    const totalExpenses = await Expense.aggregate([
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    const dailyEarning = todaysCars.reduce(
+      (partialSum, car) => partialSum + Number(car.price),
+      0
+    );
+
+    // Calculate total revenue from all sold cars
+    const totalRevenue = await Car.aggregate([
+      { $match: { sellstatus: "sold" } },
+      { $group: { _id: null, total: { $sum: "$price" } } },
+    ]);
+
+    // Calculate net earnings
+    const netEarnings =
+      (totalRevenue[0]?.total || 0) - (totalExpenses[0]?.total || 0);
+
+    const data = {
+      salesReport: await getCarsReport(carsByYears),
+      bestSellingCars: bestSellingCars,
+      carsReport: ["available", "reserved", "sold"].map(
+        (sellstatus) =>
+          carsByYears.filter((v) => v.sellstatus === sellstatus).length
+      ),
+      incomeReport: {
+        week: await getIncomeReport("week", carsByYears),
+        month: await getIncomeReport("month", carsByYears),
+        year: await getIncomeReport("year", carsByYears),
+      },
+      totalExpenses: totalExpenses[0]?.total || 0,
+      totalRevenue: totalRevenue[0]?.total || 0,
+      netEarnings: netEarnings,
+      netIncome: dailyEarning - (totalExpenses[0]?.total || 0),
+      totalUsers,
+      totalBrands,
+      totalCategories,
+      totalAvailableCars,
+      totalSoldCars: totalSoldCars, // Total sold cars
+      netIncomeSoldCars: netIncomeSoldCars, // Net income from sold cars
+      totalReservedCars: await Car.countDocuments({ sellstatus: "reserved" }), // Total reserved cars
+      dailyCars: todaysCars.length,
+      dailyEarning: dailyEarning,
+    };
+
+    res.status(200).json({ success: true, data: data });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
 
 const getHomepageCars = async (req, res) => {
   try {
@@ -28,7 +333,7 @@ const getHomepageCars = async (req, res) => {
         },
         {
           path: "brand",
-          select: ["_id", "name" ,"logo"],
+          select: ["_id", "name", "logo"],
         },
       ]);
 
@@ -45,10 +350,6 @@ const getHomepageCars = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 const createCar = async (req, res) => {
   try {
@@ -81,16 +382,7 @@ const createCar = async (req, res) => {
 
 const getAllCarsWithoutPagination = async (req, res) => {
   try {
-    const vendor = await getAdmin(req, res);
-
-    if (!vendor) {
-      return res.status(500).json({
-        success: false,
-        message: "Only vendor and admin can fetch Cars",
-      });
-    }
-
-    const Cars = await Car.find({ vendor: vendor?._id }).sort({
+    const Cars = await Car.find({}).sort({
       createdAt: -1,
     });
     res.status(201).json({
@@ -205,9 +497,6 @@ const getCars = async (req, res) => {
 //     const { slug } = req.params;
 //     const { client } = req.query;
 
-
-
-
 //     const car = await Car.findOne({ slug })
 //     .populate([
 //       {
@@ -225,7 +514,6 @@ const getCars = async (req, res) => {
 //       },
 //     ]);
 
-
 //     if (!car) {
 //       return res.status(404).json({ message: "Car Not Found" });
 //     }
@@ -240,8 +528,6 @@ const getCars = async (req, res) => {
 //   }
 // };
 
-
-
 const getCarBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -249,7 +535,7 @@ const getCarBySlug = async (req, res) => {
 
     let query = Car.findOne({ slug });
 
-    if (client === 'true') {
+    if (client === "true") {
       query = query.populate([
         {
           path: "category",
@@ -282,7 +568,6 @@ const getCarBySlug = async (req, res) => {
   }
 };
 
-
 const updateCarBySlug = async (req, res) => {
   try {
     const admin = await getAdmin(req, res);
@@ -296,7 +581,9 @@ const updateCarBySlug = async (req, res) => {
     const { slug } = req.params;
     const { ...others } = req.body;
 
-    console.log("SLUIGG-->", slug);
+    if (req.body.sellstatus && req.body.sellstatus === "sold") {
+      req.body.soldDate = new Date(); // Set soldDate when car is marked as sold
+    }
 
     const updatedSize = await Car.findOneAndUpdate(
       { slug },
@@ -410,7 +697,6 @@ const getFilters = async (req, res) => {
     const models = await Model.find({
       //   status: { $ne: "disabled" },
     }).select(["name", "slug", "_id", "brand"]);
-
 
     // Construct the response object for brands and categories
     const response = {
@@ -623,11 +909,8 @@ const getCarsFilter = async (req, res) => {
     delete newQuery.models;
     delete newQuery.year;
 
-
-
-
     for (const [key, value] of Object.entries(newQuery)) {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         newQuery[key] = value.split("_");
       }
     }
@@ -647,7 +930,6 @@ const getCarsFilter = async (req, res) => {
       categoryIds = categories.map((category) => category._id);
     }
 
-
     let modelIds = [];
     if (query.models && query.models.length > 0) {
       const modelSlugs = query.models.split("_"); // Split categories by '_'
@@ -659,15 +941,10 @@ const getCarsFilter = async (req, res) => {
       modelIds = models.map((model) => model._id);
     }
 
-
-
-
-
-
     // Handle query.seats properly
     let seatsArray = [];
     if (query.seats) {
-      if (typeof query.seats === 'string') {
+      if (typeof query.seats === "string") {
         seatsArray = query.seats.split("_").map(Number); // Convert to array of numbers
       } else if (Array.isArray(query.seats)) {
         seatsArray = query.seats.map(Number); // If it's already an array
@@ -676,7 +953,7 @@ const getCarsFilter = async (req, res) => {
     //handle query.doors properly
     let doorsArray = [];
     if (query.doors) {
-      if (typeof query.doors === 'string') {
+      if (typeof query.doors === "string") {
         doorsArray = query.doors.split("_").map(Number); // Convert to array of numbers
       } else if (Array.isArray(query.doors)) {
         doorsArray = query.doors.map(Number); // If it's already an array
@@ -687,7 +964,7 @@ const getCarsFilter = async (req, res) => {
 
     let fuelTypesArray = [];
     if (query.fuelTypes) {
-      if (typeof query.fuelTypes === 'string') {
+      if (typeof query.fuelTypes === "string") {
         fuelTypesArray = query.fuelTypes.split("_"); // Convert to array of strings
       } else if (Array.isArray(query.fuelTypes)) {
         fuelTypesArray = query.fuelTypes; // If it's already an array
@@ -697,7 +974,7 @@ const getCarsFilter = async (req, res) => {
     //type is added to query object
     let typeArray = [];
     if (query.type) {
-      if (typeof query.type === 'string') {
+      if (typeof query.type === "string") {
         typeArray = query.type.split("_"); // Convert to array of strings
       } else if (Array.isArray(query.type)) {
         typeArray = query.type; // If it's already an array
@@ -707,7 +984,7 @@ const getCarsFilter = async (req, res) => {
     //bodytype is added to query object
     let bodytypeArray = [];
     if (query.bodytypes) {
-      if (typeof query.bodytypes === 'string') {
+      if (typeof query.bodytypes === "string") {
         bodytypeArray = query.bodytypes.split("_"); // Convert to array of strings
       } else if (Array.isArray(query.bodytypes)) {
         bodytypeArray = query.bodytypes; // If it's already an array
@@ -721,8 +998,6 @@ const getCarsFilter = async (req, res) => {
       minYear = 1900; // Set a reasonable minimum year
       maxYear = new Date().getFullYear() + 1; // Current year + 1 for upcoming models
     }
-
-
 
     // console.log("isHomXXXX-->", query.year, minYear, maxYear, newQuery);
 
@@ -753,7 +1028,9 @@ const getCarsFilter = async (req, res) => {
     }).select([""]);
 
     const minPrice = query.prices ? Number(query.prices.split("_")[0]) : 1;
-    const maxPrice = query.prices ? Number(query.prices.split("_")[1]) : 10000000;
+    const maxPrice = query.prices
+      ? Number(query.prices.split("_")[1])
+      : 10000000;
 
     const products = await Car.aggregate([
       {
@@ -762,17 +1039,15 @@ const getCarsFilter = async (req, res) => {
           localField: "reviews",
           foreignField: "_id",
           as: "reviews",
-        }
-      }
-      ,
+        },
+      },
       {
-
         $lookup: {
           from: "brands", // Name of the brands collection
           localField: "brand", // Field in Car schema
           foreignField: "_id", // Field in brands collection
           as: "brandDetails", // Output field for brand details
-        }
+        },
       },
 
       {
@@ -781,11 +1056,8 @@ const getCarsFilter = async (req, res) => {
           localField: "category", // Field in Car schema
           foreignField: "_id", // Field in categories collection
           as: "categoryDetails", // Output field for category details
-        }
+        },
       },
-
-
-
 
       {
         $addFields: {
@@ -804,7 +1076,9 @@ const getCarsFilter = async (req, res) => {
           ...(query.sizes && { sizes: { $in: query.sizes.split("_") } }),
           ...(seatsArray.length > 0 && { seats: { $in: seatsArray } }),
           ...(doorsArray.length > 0 && { doors: { $in: doorsArray } }),
-          ...(fuelTypesArray.length > 0 && { fueltype: { $in: fuelTypesArray } }),
+          ...(fuelTypesArray.length > 0 && {
+            fueltype: { $in: fuelTypesArray },
+          }),
           ...(typeArray.length > 0 && { type: { $in: typeArray } }),
           ...(bodytypeArray.length > 0 && { bodytype: { $in: bodytypeArray } }),
           ...(query.ishome && { ishome: Boolean(query.ishome) }),
@@ -815,15 +1089,12 @@ const getCarsFilter = async (req, res) => {
               $gt: minPrice,
               $lt: maxPrice,
             },
-         
           }),
 
           year: {
             $gte: minYear,
             $lte: maxYear,
           },
-
-
         },
       },
       {
@@ -855,7 +1126,6 @@ const getCarsFilter = async (req, res) => {
           // populate brand and category
           brand: { $arrayElemAt: ["$brandDetails", 0] }, // Include the first brand detail
           category: { $arrayElemAt: ["$categoryDetails", 0] }, // Include the first category detail
-
         },
       },
       {
@@ -864,8 +1134,8 @@ const getCarsFilter = async (req, res) => {
             (query.price && { priceSale: Number(query.price) }) ||
             (query.name && { name: Number(query.name) }) ||
             (query.top && { averageRating: Number(query.top) }) || {
-            averageRating: -1,
-          }),
+              averageRating: -1,
+            }),
         },
       },
       {
@@ -876,9 +1146,7 @@ const getCarsFilter = async (req, res) => {
       },
     ]);
 
-
-    console.log("isHomXXXX-->", query.year, minYear, maxYear, newQuery , products);
-
+    console.log("isHomXXXX-->", products);
 
     res.status(200).json({
       success: true,
@@ -908,5 +1176,6 @@ module.exports = {
   getFiltersByCategory,
   getFilters,
   getCarsFilter,
-  getHomepageCars 
+  getHomepageCars,
+  getDashboardAnalytics,
 };

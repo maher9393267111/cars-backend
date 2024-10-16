@@ -8,7 +8,6 @@ const CarSchema = new mongoose.Schema(
     code: {
       type: String,
     },
-   
 
     doors: {
       type: Number,
@@ -78,22 +77,22 @@ const CarSchema = new mongoose.Schema(
       type: String,
     },
 
-    features:[Object],
+    features: [Object],
 
-        // New fields for features
-        // standardFeatures: {
-        //   secondRemoteKeyFob: { type: Boolean, default: false },
-        //   secondRowPrivacyGlass: { type: Boolean, default: false },
-        //   secondRowTripleWideSeat: { type: Boolean, default: false },
-        //   autoHeadlamps: { type: Boolean, default: false },
-        //   bodyColourBumper: { type: Boolean, default: false },
-        //   completeRearTrimBoard: { type: Boolean, default: false },
-        // },
-        
-        // extraFeatures: {
-        //   secondRemoteKeyFob: { type: Boolean, default: false },
-        //   secondRowPrivacyGlass: { type: Boolean, default: false },
-        // },
+    // New fields for features
+    // standardFeatures: {
+    //   secondRemoteKeyFob: { type: Boolean, default: false },
+    //   secondRowPrivacyGlass: { type: Boolean, default: false },
+    //   secondRowTripleWideSeat: { type: Boolean, default: false },
+    //   autoHeadlamps: { type: Boolean, default: false },
+    //   bodyColourBumper: { type: Boolean, default: false },
+    //   completeRearTrimBoard: { type: Boolean, default: false },
+    // },
+
+    // extraFeatures: {
+    //   secondRemoteKeyFob: { type: Boolean, default: false },
+    //   secondRowPrivacyGlass: { type: Boolean, default: false },
+    // },
 
     isFeatured: {
       type: Boolean,
@@ -211,10 +210,28 @@ const CarSchema = new mongoose.Schema(
 
     status: {
       type: String,
-    
     },
 
+    sellstatus: {
+      type: String,
+      default: "avaliable",
+    },
+
+    soldDate: {
+      type: Date,
+  },
+
+     color:{
+      type:String,
+      required:true
     
+     },
+     millege:{
+      type:Number,
+      required:true
+    
+     }
+
 
     // colors: [String],
     // sizes: [String],
