@@ -85,6 +85,8 @@ const notification = require("./routes/notification");
 const offer = require("./routes/offer");
 const banner = require("./routes/banner");
 const workHours = require("./routes/workHours");
+const carSlider = require("./routes/carSlider");
+
 
 
 
@@ -136,6 +138,8 @@ app.use("/api", notification);
 app.use("/api", offer);
 app.use("/api", banner);
 app.use("/api", workHours);
+app.use("/api", carSlider);
+
 
 
 
