@@ -1,13 +1,41 @@
 const User = require("../models/User");
 const Features = require("../models/carBook");
+const Car = require("../models/car");
+const Notifications = require("../models/Notification");
+
+
 
 const createFeature = async (req, res) => {
   try {
     const { ...others } = req.body;
 
-    await Features.create({
+  const carbook =  await Features.create({
       ...others,
     });
+
+
+    // Fetch car details
+    const car = await Car.findById(others.car);
+
+    // Create a notification
+    await Notifications.create({
+      opened: false,
+      title: "New Test Drive Booking",
+      userDetails: `${others.fullname} - ${others.email}`,
+      // link:`${carbook?.slug}`,
+      date: others.date,
+      cover: {
+        _id: car._id.toString(),
+        url: car.images[0]?.url || "default_car_image_url"
+      },
+      // city: others.city || "Unknown",
+      city:`${carbook?._id}`,
+
+      carDetails: `${car?.name}`
+    });
+
+
+
 
     res
       .status(201)
@@ -16,6 +44,8 @@ const createFeature = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+
 
 const getFeatureByAdmin = async (req, res) => {
   try {

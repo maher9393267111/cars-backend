@@ -39,7 +39,7 @@ exports.getExpenses = async (req, res) => {
       }
     )
       .sort({ createdAt: -1 })
-      .populate('car', 'name price _id slug');
+      .populate('car', 'name price _id slug sellstatus');
 
     res.status(200).json({
       success: true,

@@ -8,12 +8,17 @@ const contactSchema = new mongoose.Schema({
     lowercase: true,
     match: /.+\@.+\..+/ // Basic email validation regex
   },
-  phone: {
+  firstName: {
     type: String,
     required: true,
     trim: true,
   },
-  address: {
+  lastName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  phone: {
     type: String,
     required: true,
     trim: true,
@@ -23,9 +28,14 @@ const contactSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  address: {
+    type: String,
+ //   required: true,
+    trim: true,
+  },
   location: {
     type: String,
-    required: true,
+   // required: true,
     trim: true,
   },
 }, {

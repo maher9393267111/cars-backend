@@ -219,19 +219,16 @@ const CarSchema = new mongoose.Schema(
 
     soldDate: {
       type: Date,
-  },
+    },
 
-     color:{
-      type:String,
-      required:true
-    
-     },
-     millege:{
-      type:Number,
-      required:true
-    
-     }
-
+    color: {
+      type: String,
+      required: true,
+    },
+    millege: {
+      type: Number,
+      required: true,
+    },
 
     // colors: [String],
     // sizes: [String],

@@ -81,6 +81,13 @@ const sectionTwo = require("./routes/sectionTwo");
 const sectionThree = require("./routes/sectionThree");
 const service = require("./routes/service");
 const expense = require("./routes/expense");
+const notification = require("./routes/notification");
+const offer = require("./routes/offer");
+const banner = require("./routes/banner");
+const workHours = require("./routes/workHours");
+
+
+
 
 
 
@@ -125,6 +132,14 @@ app.use("/api", sectionTwo);
 app.use("/api", sectionThree);
 app.use("/api", service);
 app.use("/api", expense);
+app.use("/api", notification);
+app.use("/api", offer);
+app.use("/api", banner);
+app.use("/api", workHours);
+
+
+
+
 
 
 
