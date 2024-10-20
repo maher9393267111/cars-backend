@@ -54,7 +54,10 @@ const registerUser = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1111d",
+        expiresIn: "10y",
+        
+        //also in register user
+
       }
     );
     // Path to the HTML file
@@ -144,7 +147,7 @@ const loginUser = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1111d",
+        expiresIn: "10y",
       }
     );
 

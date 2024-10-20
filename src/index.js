@@ -17,14 +17,15 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 
 // Connect to MongoDB
+// all d
 mongoose
   .connect(
     "mongodb+srv://maher:maher9326@cluster0.nf63j.mongodb.net/daraa-cars-app?retryWrites=true&w=majority",
-    //daraa-cars-app
-    // "mongodb+srv://vercel-admin-user:ztRS3ekeWCxTp951@cluster0.0a6ga.mongodb.net/tiendev",
+   
     {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
     }
   )
   .then(() => {
@@ -86,6 +87,7 @@ const offer = require("./routes/offer");
 const banner = require("./routes/banner");
 const workHours = require("./routes/workHours");
 const carSlider = require("./routes/carSlider");
+const titles = require("./routes/titles");
 
 
 
@@ -139,6 +141,7 @@ app.use("/api", offer);
 app.use("/api", banner);
 app.use("/api", workHours);
 app.use("/api", carSlider);
+app.use("/api", titles);
 
 
 
@@ -158,3 +161,8 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+//fix error (node:1468) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
+//  SDK releases are limited to address critical bug fixes and security issues only.
+//  For more information, see https://aws.amazon.com/sdk-for-browser/v2/faqs-issues/
+//  Please update your code to use the latest SDK version.

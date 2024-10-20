@@ -18,6 +18,8 @@ const {
 
 
 
+
+
 const getDashboardAnalytics = async (req, res) => {
   try {
     const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
@@ -99,10 +101,12 @@ const getDashboardAnalytics = async (req, res) => {
       createdAt: { $gt: lastYearDate, $lt: todayDate },
     }).select(["createdAt", "sellstatus", "price"]);
 
-    // Fetch cars sold today
+    // Get the number of cars sold today
     const todaysCars = await Car.find({
-      soldDate: {
+      sellstatus: "sold",
+      createdAt: {
         $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        $lt: new Date(new Date().setHours(23, 59, 59, 999))
       },
     });
 
@@ -135,6 +139,8 @@ const getDashboardAnalytics = async (req, res) => {
       0
     );
 
+    console.log("dailyEarning-->", dailyEarning);
+
     // Calculate total revenue from all sold cars
     const totalRevenue = await Car.aggregate([
       { $match: { sellstatus: "sold" } },
@@ -144,6 +150,28 @@ const getDashboardAnalytics = async (req, res) => {
     // Calculate net earnings
     const netEarnings =
       (totalRevenue[0]?.total || 0) - (totalExpenses[0]?.total || 0);
+
+    // Calculate total expenses for today
+    const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+    const todayEnd = new Date(new Date().setHours(23, 59, 59, 999));
+    const todayExpenses = await Expense.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: todayStart, $lte: todayEnd }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    const dailyExpenses = todayExpenses[0]?.total || 0;
+
+    // Calculate daily net income
+    const dailyNetIncome = dailyEarning - dailyExpenses;
 
     const data = {
       salesReport: await getCarsReport(carsByYears),
@@ -160,7 +188,7 @@ const getDashboardAnalytics = async (req, res) => {
       totalExpenses: totalExpenses[0]?.total || 0,
       totalRevenue: totalRevenue[0]?.total || 0,
       netEarnings: netEarnings,
-      netIncome: dailyEarning - (totalExpenses[0]?.total || 0),
+      netIncome: dailyNetIncome, // Updated to use the correct daily net income
       totalUsers,
       totalBrands,
       totalCategories,
@@ -170,6 +198,7 @@ const getDashboardAnalytics = async (req, res) => {
       totalReservedCars: await Car.countDocuments({ sellstatus: "reserved" }), // Total reserved cars
       dailyCars: todaysCars.length,
       dailyEarning: dailyEarning,
+      dailyExpenses: dailyExpenses, // Added for transparency
     };
 
     res.status(200).json({ success: true, data: data });
@@ -181,6 +210,8 @@ const getDashboardAnalytics = async (req, res) => {
     });
   }
 };
+
+
 
 const getHomepageCars = async (req, res) => {
   try {
@@ -431,13 +462,13 @@ const getCarBySlug = async (req, res) => {
 
 const updateCarBySlug = async (req, res) => {
   try {
-    const admin = await getAdmin(req, res);
+    // const admin = await getAdmin(req, res);
 
-    if (!admin) {
-      res
-        .status(500)
-        .json({ success: false, message: "Only Admin can update Car" });
-    }
+    // if (!admin) {
+    //   res
+    //     .status(500)
+    //     .json({ success: false, message: "Only Admin can update Car" });
+    // }
 
     const { slug } = req.params;
     const { ...others } = req.body;
@@ -934,3 +965,4 @@ module.exports = {
   getHomepageCars,
   getDashboardAnalytics,
 };
+

@@ -1,4 +1,4 @@
-// Import the cloudinary module
+
 const cloudinary = require("./cloudinary");
 const {
   S3Client,

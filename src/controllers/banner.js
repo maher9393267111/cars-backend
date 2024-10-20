@@ -3,13 +3,15 @@ const About = require("../models/banner");
 
 const createBanner = async (req, res) => {
   try {
-    const { title,description ,logo ,logomobile} = req.body;
+    const { title,description ,logo ,logomobile, bgColor, textColor} = req.body;
 
     const newAbout = await About.create({
       title,
       description,
       logo,
-      logomobile
+      logomobile,
+      bgColor,
+      textColor
       
     });
 
@@ -35,8 +37,8 @@ const getBanner = async (req, res) => {
 
 const updateBanner = async (req, res) => {
   try {
-    const { title, description, logo  ,logomobile} = req.body;
-    const updatedAbout = await About.findOneAndUpdate({}, { title, description, logo , logomobile }, { new: true, runValidators: true });
+    const { title, description, logo  ,logomobile, bgColor, textColor} = req.body;
+    const updatedAbout = await About.findOneAndUpdate({}, { title, description, logo , logomobile, bgColor, textColor }, { new: true, runValidators: true });
 
     if (!updatedAbout) {
       return res.status(404).json({ message: "Banner Not Found" });

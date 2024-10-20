@@ -51,7 +51,19 @@ const BannerSchema = new mongoose.Schema(
     //  required: [true, 'Slug is required.'],
     },
 
-    
+    // add banner bg color
+    bgColor: {
+      type: String,
+    //  required: [true, 'Banner bg color is required.'],
+    default: '#FFFFFF',
+    },
+
+    //text color
+    textColor: {
+      type: String,
+    //  required: [true, 'Banner text color is required.'],
+    default: '#000000',
+    },
 
 
   },

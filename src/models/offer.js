@@ -34,6 +34,28 @@ const OfferSchema = new mongoose.Schema({
   slug: {
     type: String,
   },
+
+titleColor: {
+  type: String,
+  default: '#000000', //black
+},  
+subtitleColor: {
+  type: String,
+  default: '#637381',  // gray  that set in form
+},
+buttonColor: {
+  type: String,
+  default: '#FFFFFF', //white
+},
+
+buttonBgColor: {
+  type: String,
+  default: '#EE1E50', //set red text-main bg-white 
+},
+buttonText: {
+  type: String,
+  default: '#FFFFFF', //white
+},
 }, {
   timestamps: true,
 });
@@ -49,6 +71,8 @@ const MultiOffersSchema = new mongoose.Schema({
       message: 'There must be at least one offer'
     }
   },
+
+
   globalSlug: {
     type: String,
     unique: true,

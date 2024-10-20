@@ -14,13 +14,14 @@ router.get("/admin/cars", verifyToken,  Car.getAllCars);
 
 router.get("/admin/car/:slug", Car.getCarBySlug);
 
-router.put("/admin/car/:slug", verifyToken, Car.updateCarBySlug);
+router.put("/admin/car/:slug", Car.updateCarBySlug);
 
 router.delete("/admin/car/:slug", verifyToken,  Car.deleteCarBySlug);
 
 
 router.get("/admin/carsnopagination", Car.getAllCarsWithoutPagination);
 router.get("/admin/cars-home", Car.getHomepageCars);
+
 
 
 

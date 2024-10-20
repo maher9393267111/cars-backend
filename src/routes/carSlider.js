@@ -7,5 +7,9 @@ router.get('/admin/carslider', getCarSlider); // Get Single Car Slider
 router.get('/admin/carsliders', getAllCarSliders); // Get All Car Sliders
 router.put('/admin/carslider', updateCarSlider); // Update Car Slider
 
+
+
+
 module.exports = router;
+
 

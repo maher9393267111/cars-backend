@@ -13,6 +13,10 @@ const ServiceSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  icon: {
+    type: String,
+   // required: [true, 'Icon is required'],
+  },
   slug: {
     type: String,
   },
