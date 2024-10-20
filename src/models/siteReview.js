@@ -5,16 +5,22 @@ const SiteReviewSchema = new mongoose.Schema(
     cover: {
       _id: {
         type: String,
-        required: [true, 'image-id-required-error'],
+      //  required: [true, 'image-id-required-error'],
       },
       url: {
         type: String,
-        required: [true, 'image-url-required-error'],
+      //  required: [true, 'image-url-required-error'],
       },
       blurDataURL: {
         type: String,
        // required: [true, 'image-blur-data-url-required-error'],
       },
+    },
+
+    //also add imagtype  so ican select defaul or upload or first word of the name of customer
+    imagetype: {
+      type: String,
+      default: 'upload',
     },
 
 
