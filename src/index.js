@@ -68,6 +68,7 @@ const compaign = require("./routes/compaign");
 const car = require("./routes/car");
 const blog = require("./routes/blog");
 
+
 const siteReview = require("./routes/siteViews");
 const blogcategory = require("./routes/blogCategory");
 const about = require("./routes/about");
@@ -88,9 +89,17 @@ const banner = require("./routes/banner");
 const workHours = require("./routes/workHours");
 const carSlider = require("./routes/carSlider");
 const titles = require("./routes/titles");
+const footer = require("./routes/footer");
 
 
+// ... (other imports)
+const navTitles = require("./routes/navTitles");
 
+// ... (other middleware and route setups)
+
+app.use("/api", navTitles);
+
+// ... (rest of the file)
 
 
 
@@ -142,6 +151,9 @@ app.use("/api", banner);
 app.use("/api", workHours);
 app.use("/api", carSlider);
 app.use("/api", titles);
+app.use("/api", footer);
+
+
 
 
 
