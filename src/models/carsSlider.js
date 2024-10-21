@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 
@@ -11,6 +12,12 @@ const ItemSchema = new mongoose.Schema({
 });
 
 const SectionSchema = new mongoose.Schema({
+
+  bgColor: {
+    type: String,
+    default: '#f5f5f5' // from navbar gradient
+  },
+
 
   items: {
     type: [ItemSchema],
