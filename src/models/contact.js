@@ -36,7 +36,7 @@ const contactSchema = new mongoose.Schema({
   location: {
     type: String,
    // required: true,
-    trim: true,
+  //  trim: true,
   },
 }, {
   timestamps: true, // Automatically manage createdAt and updatedAt fields
