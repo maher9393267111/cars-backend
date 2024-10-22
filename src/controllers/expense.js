@@ -4,12 +4,12 @@ const Car = require('../models/car');
 // Create a new expense
 exports.createExpense = async (req, res) => {
   try {
-    const { carId, amount, description } = req.body;
-    const car = await Car.findById(carId);
-    if (!car) {
+    const { car, amount, description } = req.body;
+    const carItem = await Car.findById({_id:car});
+    if (!carItem) {
       return res.status(404).json({ success: false, message: 'Car not found' });
     }
-    const expense = new Expense({ car: carId, amount, description });
+    const expense = new Expense({ car: car, amount, description });
 
     await expense.save();
     res.status(201).json({ success: true, data: expense ,messaga:'Expense created successfully' });

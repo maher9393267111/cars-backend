@@ -43,7 +43,7 @@ const createNewsletter = async (req, res) => {
 	} catch (error) {
 		res.status(400).json({
 			success: false,
-			message: "Failed To Add Newsletter",
+			message: `you already subscribed to our newsletter`,
 		});
 	}
 };

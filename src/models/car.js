@@ -238,3 +238,9 @@ const CarSchema = new mongoose.Schema(
 
 const Car = mongoose.models.Car || mongoose.model("Car", CarSchema);
 module.exports = Car;
+
+//execute function to update all cars sellstatus to avaliable
+
+
+
+

@@ -19,6 +19,209 @@ const {
 
 
 
+// const getDashboardAnalytics = async (req, res) => {
+//   try {
+//     const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
+//     const getLastWeeksDate = () => {
+//       const now = new Date();
+//       return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+//     };
+
+//     const getCarsReport = async (carsByYears) => {
+//       return [...new Array(12)].map(
+//         (_, i) =>
+//           carsByYears.filter(
+//             (v) =>
+//               new Date(v.createdAt).getMonth() + 1 === i + 1 &&
+//               v.sellstatus === "sold"
+//           ).length
+//       );
+//     };
+
+//     const getIncomeReport = async (prop, carsByYears) => {
+//       const now = new Date();
+//       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+//       const newData = carsByYears.filter((item) => {
+//         const itemDate = new Date(item.createdAt);
+//         if (prop === "year") {
+//           return itemDate.getFullYear() === now.getFullYear();
+//         } else if (prop === "week") {
+//           return itemDate >= getLastWeeksDate() && itemDate < now;
+//         } else { // month
+//           return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+//         }
+//       });
+
+//       const result = await Promise.all(
+//         newData.map(async (car) => {
+//           const expenses = await Expense.find({ car: car._id });
+//           const totalExpenses = expenses.reduce(
+//             (sum, expense) => sum + expense.amount,
+//             0
+//           );
+//           return {
+//             ...car.toObject(),
+//             netIncome: Number(car.price) - totalExpenses,
+//             createdAt: car.createdAt,
+//           };
+//         })
+//       );
+
+//       const getDayData = (date, data) =>
+//         data
+//           .filter((v) => {
+//             const vDate = new Date(v.createdAt);
+//             return vDate.getDate() === date.getDate() &&
+//                    vDate.getMonth() === date.getMonth() &&
+//                    vDate.getFullYear() === date.getFullYear();
+//           })
+//           .reduce((sum, a) => sum + a.netIncome, 0);
+
+//       if (prop === "week") {
+//         return [...new Array(7)].map((_, i) => {
+//           const date = new Date(startOfToday);
+//           date.setDate(date.getDate() - 6 + i);
+//           return Number(getDayData(date, result).toFixed(2));
+//         });
+//       } else if (prop === "year") {
+//         return [...new Array(12)].map((_, i) =>
+//           Number(result
+//             .filter((v) => new Date(v.createdAt).getMonth() === i)
+//             .reduce((sum, a) => sum + a.netIncome, 0)
+//             .toFixed(2))
+//         );
+//       } else { // month
+//         const daysInMonth = getDaysInMonth(now.getMonth() + 1, now.getFullYear());
+//         return [...new Array(daysInMonth)].map((_, i) => {
+//           const date = new Date(now.getFullYear(), now.getMonth(), i + 1);
+//           return Number(getDayData(date, result).toFixed(2));
+//         });
+//       }
+//     };
+
+//     const totalUsers = await User.countDocuments({ role: "user" });
+//     const totalBrands = await Brand.countDocuments();
+//     const totalCategories = await Category.countDocuments();
+//     const totalAvailableCars = await Car.countDocuments({
+//       sellstatus: "avaliable",
+//     });
+
+//     const lastYearDate = new Date();
+//     lastYearDate.setFullYear(lastYearDate.getFullYear() - 1);
+//     const todayDate = new Date();
+//     const carsByYears = await Car.find({
+//       createdAt: { $gt: lastYearDate, $lt: todayDate },
+//     }).select(["createdAt", "sellstatus", "price"]);
+
+//     // Calculate data for today
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+//     const todayEnd = new Date();
+//     todayEnd.setHours(23, 59, 59, 999);
+
+//     // Get cars sold today and calculate daily earning
+//     const todaysSoldCars = await Car.find({
+//       sellstatus: "sold",
+//       soldDate: { $gte: todayStart, $lte: todayEnd }
+//     });
+
+//     const dailyEarning = todaysSoldCars.reduce(
+//       (sum, car) => sum + Number(car.price),
+//       0
+//     );
+
+//     // Calculate total expenses for today
+//     const todayExpenses = await Expense.aggregate([
+//       {
+//         $match: {
+//           createdAt: { $gte: todayStart, $lte: todayEnd }
+//         }
+//       },
+//       {
+//         $group: {
+//           _id: null,
+//           total: { $sum: "$amount" }
+//         }
+//       }
+//     ]);
+
+//     const dailyExpenses = todayExpenses[0]?.total || 0;
+
+//     // Calculate daily net income
+//     const dailyNetIncome = Number((dailyEarning - dailyExpenses).toFixed(2));
+
+//     // Calculate total sold cars and net income for all sold cars
+//     const soldCars = await Car.find({ sellstatus: "sold" });
+//     const totalSoldCars = soldCars.length;
+
+//     let netIncomeSoldCars = 0;
+//     await Promise.all(
+//       soldCars.map(async (car) => {
+//         const expenses = await Expense.find({ car: car._id });
+//         const totalExpenses = expenses.reduce(
+//           (sum, expense) => sum + expense.amount,
+//           0
+//         );
+//         netIncomeSoldCars += Number(car.price) - totalExpenses;
+//       })
+//     );
+
+//     const bestSellingCars = await Car.find({ sellstatus: "sold" })
+//       .sort({ createdAt: -1 })
+//       .limit(5);
+
+//     // Calculate total revenue and expenses (all-time)
+//     const totalRevenue = await Car.aggregate([
+//       { $match: { sellstatus: "sold" } },
+//       { $group: { _id: null, total: { $sum: "$price" } } },
+//     ]);
+
+//     const totalExpenses = await Expense.aggregate([
+//       { $group: { _id: null, total: { $sum: "$amount" } } },
+//     ]);
+
+//     // Calculate net earnings (all-time)
+//     const netEarnings = Number(((totalRevenue[0]?.total || 0) - (totalExpenses[0]?.total || 0)).toFixed(2));
+
+//     const data = {
+//       salesReport: await getCarsReport(carsByYears),
+//       bestSellingCars: bestSellingCars,
+//       carsReport: ["avaliable", "reserved", "sold"].map(
+//         (sellstatus) =>
+//           carsByYears.filter((v) => v.sellstatus === sellstatus).length
+//       ),
+//       incomeReport: {
+//         week: await getIncomeReport("week", carsByYears),
+//         month: await getIncomeReport("month", carsByYears),
+//         year: await getIncomeReport("year", carsByYears),
+//       },
+//       totalExpenses: totalExpenses[0]?.total || 0,
+//       totalRevenue: totalRevenue[0]?.total || 0,
+//       netEarnings: netEarnings,
+//       netIncome: dailyNetIncome,
+//       totalUsers,
+//       totalBrands,
+//       totalCategories,
+//       totalAvailableCars,
+//       totalSoldCars: totalSoldCars,
+//       netIncomeSoldCars: Number(netIncomeSoldCars.toFixed(2)),
+//       totalReservedCars: await Car.countDocuments({ sellstatus: "reserved" }),
+//       dailyCars: todaysSoldCars.length,
+//       dailyEarning: dailyEarning,
+//       dailyExpenses: dailyExpenses,
+//     };
+
+//     res.status(200).json({ success: true, data: data });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//       error: error.message,
+//     });
+//   }
+// };
+
 
 const getDashboardAnalytics = async (req, res) => {
   try {
@@ -39,59 +242,85 @@ const getDashboardAnalytics = async (req, res) => {
       );
     };
 
-    const getIncomeReport = async (prop, carsByYears) => {
-      const newData = carsByYears.filter((item) =>
-        prop === "year"
-          ? true
-          : prop === "week"
-          ? new Date(item.createdAt).getMonth() === new Date().getMonth() &&
-            new Date(item.createdAt).getTime() > getLastWeeksDate().getTime()
-          : new Date(item.createdAt).getMonth() === new Date().getMonth()
-      );
+    const getIncomeReport = async (prop) => {
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfWeek = new Date(startOfToday);
+      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
 
-      const result = await Promise.all(
-        newData.map(async (car) => {
-          const expenses = await Expense.find({ car: car._id });
-          const totalExpenses = expenses.reduce(
-            (sum, expense) => sum + expense.amount,
-            0
-          );
-          return {
-            ...car.toObject(),
-            netIncome: car.price - totalExpenses,
-          };
-        })
-      );
-
-      const getDayData = (date, data) =>
-        data
-          .filter((v) => new Date(v.createdAt).getDate() === date)
-          .reduce((sum, a) => sum + Number(a.netIncome), 0);
+      let startDate, endDate, groupBy;
 
       if (prop === "week") {
-        return [...new Array(7)].map((_, i) =>
-          getDayData(getLastWeeksDate().getDate() + i, result)
-        );
+        startDate = startOfWeek;
+        endDate = now;
+        groupBy = { $dayOfWeek: "$soldDate" };
       } else if (prop === "year") {
-        return [...new Array(12)].map((_, i) =>
-          result
-            .filter((v) => new Date(v.createdAt).getMonth() === i)
-            .reduce((sum, a) => sum + Number(a.netIncome), 0)
-        );
-      } else {
-        return [
-          ...new Array(
-            getDaysInMonth(new Date().getMonth() + 1, new Date().getFullYear())
-          ),
-        ].map((_, i) => getDayData(i + 1, result));
+        startDate = startOfYear;
+        endDate = now;
+        groupBy = { $month: "$soldDate" };
+      } else { // month
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = now;
+        groupBy = { $dayOfMonth: "$soldDate" };
       }
+
+      const soldCarsData = await Car.aggregate([
+        {
+          $match: {
+            sellstatus: "sold",
+            soldDate: { $gte: startDate, $lte: endDate }
+          }
+        },
+        {
+          $lookup: {
+            from: "expenses",
+            localField: "_id",
+            foreignField: "car",
+            as: "expenses"
+          }
+        },
+        {
+          $addFields: {
+            netIncome: {
+              $subtract: [
+                "$price",
+                { $sum: "$expenses.amount" }
+              ]
+            }
+          }
+        },
+        {
+          $group: {
+            _id: groupBy,
+            totalNetIncome: { $sum: "$netIncome" }
+          }
+        },
+        { $sort: { _id: 1 } }
+      ]);
+
+      let result;
+      if (prop === "week") {
+        result = new Array(7).fill(0);
+      } else if (prop === "year") {
+        result = new Array(12).fill(0);
+      } else { // month
+        result = new Array(getDaysInMonth(now.getMonth() + 1, now.getFullYear())).fill(0);
+      }
+
+      soldCarsData.forEach(item => {
+        const index = prop === "week" ? item._id - 1 : item._id - 1;
+        result[index] += item.totalNetIncome;
+      });
+
+      return result.map(value => Number(value.toFixed(2)));
     };
 
     const totalUsers = await User.countDocuments({ role: "user" });
     const totalBrands = await Brand.countDocuments();
     const totalCategories = await Category.countDocuments();
     const totalAvailableCars = await Car.countDocuments({
-      sellstatus: "available",
+      sellstatus: "avaliable",
     });
 
     const lastYearDate = new Date();
@@ -101,59 +330,24 @@ const getDashboardAnalytics = async (req, res) => {
       createdAt: { $gt: lastYearDate, $lt: todayDate },
     }).select(["createdAt", "sellstatus", "price"]);
 
-    // Get the number of cars sold today
-    const todaysCars = await Car.find({
+    // Calculate data for today
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    // Get cars sold today and calculate daily earning
+    const todaysSoldCars = await Car.find({
       sellstatus: "sold",
-      createdAt: {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        $lt: new Date(new Date().setHours(23, 59, 59, 999))
-      },
+      soldDate: { $gte: todayStart, $lte: todayEnd }
     });
 
-    // Calculate total sold cars and net income for sold cars
-    const soldCars = await Car.find({ sellstatus: "sold" });
-    const totalSoldCars = soldCars.length;
-
-    let netIncomeSoldCars = 0;
-    await Promise.all(
-      soldCars.map(async (car) => {
-        const expenses = await Expense.find({ car: car._id });
-        const totalExpenses = expenses.reduce(
-          (sum, expense) => sum + expense.amount,
-          0
-        );
-        netIncomeSoldCars += car.price - totalExpenses;
-      })
-    );
-
-    const bestSellingCars = await Car.find({ sellstatus: "sold" })
-      .sort({ createdAt: -1 })
-      .limit(5);
-
-    const totalExpenses = await Expense.aggregate([
-      { $group: { _id: null, total: { $sum: "$amount" } } },
-    ]);
-
-    const dailyEarning = todaysCars.reduce(
-      (partialSum, car) => partialSum + Number(car.price),
+    const dailyEarning = todaysSoldCars.reduce(
+      (sum, car) => sum + Number(car.price),
       0
     );
 
-    console.log("dailyEarning-->", dailyEarning);
-
-    // Calculate total revenue from all sold cars
-    const totalRevenue = await Car.aggregate([
-      { $match: { sellstatus: "sold" } },
-      { $group: { _id: null, total: { $sum: "$price" } } },
-    ]);
-
-    // Calculate net earnings
-    const netEarnings =
-      (totalRevenue[0]?.total || 0) - (totalExpenses[0]?.total || 0);
-
     // Calculate total expenses for today
-    const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
-    const todayEnd = new Date(new Date().setHours(23, 59, 59, 999));
     const todayExpenses = await Expense.aggregate([
       {
         $match: {
@@ -171,34 +365,62 @@ const getDashboardAnalytics = async (req, res) => {
     const dailyExpenses = todayExpenses[0]?.total || 0;
 
     // Calculate daily net income
-    const dailyNetIncome = dailyEarning - dailyExpenses;
+    const dailyNetIncome = Number((dailyEarning - dailyExpenses).toFixed(2));
+
+    // Calculate total sold cars and net income for all sold cars
+    const soldCars = await Car.find({ sellstatus: "sold" });
+    const totalSoldCars = soldCars.length;
+
+    const totalSoldCarsIncome = await Car.aggregate([
+      { $match: { sellstatus: "sold" } },
+      { $group: { _id: null, total: { $sum: "$price" } } }
+    ]);
+
+    const totalSoldCarsExpenses = await Expense.aggregate([
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+
+    const netIncomeSoldCars = Number((
+      (totalSoldCarsIncome[0]?.total || 0) - (totalSoldCarsExpenses[0]?.total || 0)
+    ).toFixed(2));
+
+    const bestSellingCars = await Car.find({ sellstatus: "sold" })
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    // Calculate total revenue and expenses (all-time)
+    const totalRevenue = totalSoldCarsIncome[0]?.total || 0;
+    const totalExpenses = totalSoldCarsExpenses[0]?.total || 0;
+
+    // Calculate net earnings (all-time)
+    const netEarnings = Number((totalRevenue - totalExpenses).toFixed(2));
 
     const data = {
       salesReport: await getCarsReport(carsByYears),
       bestSellingCars: bestSellingCars,
-      carsReport: ["available", "reserved", "sold"].map(
+      carsReport: ["avaliable", "reserved", "sold"].map(
         (sellstatus) =>
           carsByYears.filter((v) => v.sellstatus === sellstatus).length
       ),
       incomeReport: {
-        week: await getIncomeReport("week", carsByYears),
-        month: await getIncomeReport("month", carsByYears),
-        year: await getIncomeReport("year", carsByYears),
+        week: await getIncomeReport("week"),
+        month: await getIncomeReport("month"),
+        year: await getIncomeReport("year"),
       },
-      totalExpenses: totalExpenses[0]?.total || 0,
-      totalRevenue: totalRevenue[0]?.total || 0,
+      totalExpenses: totalExpenses,
+      totalRevenue: totalRevenue,
       netEarnings: netEarnings,
-      netIncome: dailyNetIncome, // Updated to use the correct daily net income
+      netIncome: dailyNetIncome,
       totalUsers,
       totalBrands,
       totalCategories,
       totalAvailableCars,
-      totalSoldCars: totalSoldCars, // Total sold cars
-      netIncomeSoldCars: netIncomeSoldCars, // Net income from sold cars
-      totalReservedCars: await Car.countDocuments({ sellstatus: "reserved" }), // Total reserved cars
-      dailyCars: todaysCars.length,
+      totalSoldCars: totalSoldCars,
+      netIncomeSoldCars: netIncomeSoldCars,
+      totalReservedCars: await Car.countDocuments({ sellstatus: "reserved" }),
+      dailyCars: todaysSoldCars.length,
       dailyEarning: dailyEarning,
-      dailyExpenses: dailyExpenses, // Added for transparency
+      dailyExpenses: dailyExpenses,
     };
 
     res.status(200).json({ success: true, data: data });
@@ -277,6 +499,15 @@ const getAllCarsWithoutPagination = async (req, res) => {
     const Cars = await Car.find({}).sort({
       createdAt: -1,
     });
+
+    const updateSellstatus = async () => {
+      await Car.updateMany({}, { $set: { sellstatus: "avaliable" } });
+    };
+
+   await updateSellstatus();
+
+
+    
     res.status(201).json({
       success: true,
       data: Cars,
@@ -373,6 +604,8 @@ const getCars = async (req, res) => {
     }).sort({
       createdAt: -1,
     });
+
+
 
     res.status(201).json({
       success: true,
@@ -575,42 +808,6 @@ const getFiltersByCategory = async (req, res) => {
 };
 
 
-
-
-
-// const getFilters = async (req, res) => {
-//   try {
-//     // Fetch categories (assuming you have a Category model)
-//     const categories = await Category.find({
-//       //  status: { $ne: "disabled" },
-//     }).select(["name", "slug"]); // Adjust the fields according to your Category schema
-
-//     // Fetch brands
-//     const brands = await Brand.find({
-//       //   status: { $ne: "disabled" },
-//     }).select(["name", "slug"]);
-
-//     const models = await Model.find({
-//       //   status: { $ne: "disabled" },
-//     }).select(["name", "slug", "_id", "brand"]);
-
-//     // Construct the response object for brands and categories
-//     const response = {
-//       brands,
-//       categories,
-//       models,
-//       prices: [1, 100000000],
-//     };
-
-//     res.status(200).json({ success: true, data: response });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//       error: error.message,
-//     });
-//   }
-// };
 
 
 const getFilters= async(reqt, res)=> {
@@ -965,4 +1162,5 @@ module.exports = {
   getHomepageCars,
   getDashboardAnalytics,
 };
+
 

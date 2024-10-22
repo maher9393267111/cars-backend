@@ -5,18 +5,14 @@ const expenseController = require('../controllers/expense');
 
 // Public routes
 router.get('/admin/all-expenses', expenseController.getExpenses);
+router.post('/admin/expense', expenseController.createExpense);
+router.get('/admin/expense/:id', expenseController.getExpense);
+router.put('/admin/expense/:id', expenseController.updateExpense);
+router.delete('/admin/expense/:id', expenseController.deleteExpense);
 
 
 
-router
-  .route('/admin/expense')
-  .get(expenseController.getExpenses)
-  .post(expenseController.createExpense);
+ 
 
-router
-  .route('/admin/expense/:id')
-  .get(expenseController.getExpense)
-  .put(expenseController.updateExpense)
-  .delete(expenseController.deleteExpense);
 
 module.exports = router;
