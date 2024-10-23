@@ -419,8 +419,8 @@ const getDashboardAnalytics = async (req, res) => {
       netIncomeSoldCars: netIncomeSoldCars,
       totalReservedCars: await Car.countDocuments({ sellstatus: "reserved" }),
       dailyCars: todaysSoldCars.length,
-      dailyEarning: dailyEarning,
-      dailyExpenses: dailyExpenses,
+      dailyEarning: Number(dailyEarning.toFixed(2)),
+      dailyExpenses: Number(dailyExpenses.toFixed(2)),
     };
 
     res.status(200).json({ success: true, data: data });
@@ -500,11 +500,11 @@ const getAllCarsWithoutPagination = async (req, res) => {
       createdAt: -1,
     });
 
-    const updateSellstatus = async () => {
-      await Car.updateMany({}, { $set: { sellstatus: "avaliable" } });
-    };
+  //   const updateSellstatus = async () => {
+  //     await Car.updateMany({}, { $set: { sellstatus: "avaliable" } });
+  //   };
 
-   await updateSellstatus();
+  //  await updateSellstatus();
 
 
     
@@ -1162,5 +1162,7 @@ module.exports = {
   getHomepageCars,
   getDashboardAnalytics,
 };
+
+
 
 

@@ -10,6 +10,17 @@ const ExpenseSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+
+  expenseAmount: {
+    type: Number,
+    required: true
+  },
+  
+  taxPercentage: {
+    type: Number,
+    required: true
+  },
+
   description: {
     type: String,
     required: true
