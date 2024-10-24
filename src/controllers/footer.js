@@ -1,4 +1,5 @@
 const Footer = require('../models/footer');
+const { multiFilesDelete, singleFileDelete } = require('../config/digitalOceanFunctions');
 
 //create footer
 exports.createFooter = async (req, res) => {

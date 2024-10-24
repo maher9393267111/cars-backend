@@ -15,6 +15,7 @@ const FooterItemSchema = new mongoose.Schema({
 // Define the main Footer schema
 const FooterSchema = new mongoose.Schema({
 
+
 title: {
   type: String,
   required: [true, 'Title is required'],
@@ -34,6 +35,12 @@ description: {
     required: [true, 'Heading Two is required'],
   },
   headingTwoItems: [FooterItemSchema],
+
+
+
+
+
+
 }, {
   timestamps: true,
 });
